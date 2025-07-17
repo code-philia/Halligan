@@ -1,0 +1,15 @@
+- iframe
+- heading "Use the arrows to pick the group of rocks that has the amount indicated on the left. (1 of 1)" [level=2]:
+  - strong: Use the arrows
+  - text: to pick the
+  - strong: group of rocks
+  - text: that has the
+  - strong: amount
+  - text: indicated on the left. (1 of 1)
+- img
+- img "Image 1 of 6."
+- button "Navigate to previous image":
+  - img
+- button "Navigate to next image":
+  - img
+- button "Submit"

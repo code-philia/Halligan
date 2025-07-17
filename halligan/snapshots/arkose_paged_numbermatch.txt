@@ -1,0 +1,15 @@
+- iframe
+- heading "Use the arrows to change the number of objects until it matches the left image. (1 of 1)" [level=2]:
+  - strong: Use the arrows
+  - text: to change the
+  - strong: number of objects
+  - text: until it
+  - strong: matches
+  - text: the left image. (1 of 1)
+- img
+- img "Image 1 of 6."
+- button "Navigate to previous image":
+  - img
+- button "Navigate to next image":
+  - img
+- button "Submit"

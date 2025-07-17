@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tencent VTT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <script src="{{ url_for('tencent.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div id="captcha-container" dir="ltr" style="width: 320px; margin: 0px auto;">
+        <div id="root" style="font-family: Amazon Ember, Helvetica, Arial, sans-serif; width: 100%;">
+            <div class="tcaptcha-modal" style="min-width: 180px; max-width: 640px; height: auto; margin: 0px auto;">
+                <div style="margin-bottom: 10px;">
+                    <div tabindex="-1" style="outline-color: rgba(0, 0, 0, 0);">
+                        <div class="tcaptcha-instruction" style="margin-bottom: 16px;"></div>
+                        <div style="position: relative;"><canvas width="340" height="230"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

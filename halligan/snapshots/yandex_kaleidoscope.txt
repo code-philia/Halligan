@@ -1,0 +1,5 @@
+- text: Move the slider to complete the puzzle Pull to the right
+- slider "Thumb":
+  - img
+- text: SmartCaptcha by Yandex Cloud
+- img

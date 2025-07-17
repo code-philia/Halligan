@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MTCaptcha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('mtcaptcha.static', filename='style.css') }}">
+    <script src="{{ url_for('mtcaptcha.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div class="mtcap-main" id="mtcap-main-1">
+        <div class="mtcap-card" id="mtcap-card-1">
+            <div class="mtcap-image" aria-label="captcha image." id="mtcap-image-1"
+                style="filter: none; animation: 1s ease-out 0s 1 normal none running fadein; background-image: url(); background-repeat: no-repeat; background-size: auto;">
+            </div>
+            <div class="divTable mtcap-inputbox" id="mtcap-inputbox-1" cellspacing="0">
+                <div id="mtcap-tr-1" class="divTableRow">
+                    <div class="mtcap-inputborder mtcap-inputborder-custom mtcap-td-block"
+                        id="mtcap-td-1">
+                        <input class="mtcap-noborder mtcap-inputtext mtcap-inputtext-custom"
+                            id="mtcap-inputtext-1" type="text" placeholder="Enter text from image" autocomplete="off"
+                            autocorrect="off" pattern="[a-zA-Z0-9]*" aria-labelledby="desc4InputText-1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

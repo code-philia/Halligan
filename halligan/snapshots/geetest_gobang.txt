@@ -1,0 +1,5 @@
+- iframe
+- dialog:
+  - text: Click and drop to line up five identical items in a row
+  - link "Geetest":
+    - /url: https://www.geetest.com/first_page

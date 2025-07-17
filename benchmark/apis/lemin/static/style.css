@@ -1,0 +1,78 @@
+.lemin-captcha-popup {
+    inset: 16px auto auto 407.2px;
+    background-color: #fff;
+    box-sizing: border-box;
+    border: 1px solid #d4d4d3;
+    border-radius: 8px;
+    height: auto;
+    max-width: 442px;
+    min-width: auto;
+    padding: 1.5rem;
+    margin: auto;
+}
+
+.lemin-captcha-caption {
+    max-width: 392px;
+    align-items: center;
+    color: #282518;
+    display: flex;
+    font-size: 18px;
+    line-height: 24px;
+    padding-bottom: 1.5rem;
+    width: 100%;
+}
+
+.lemin-captcha-caption, .lemin-captcha .captcha-header p {
+    align-items: flex-end;
+    display: flex;
+    font-family: silka,Poppins,sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    margin: 0 0.5rem 0 0;
+    text-align: center;
+}
+
+.lemin-captcha {
+    position: relative;
+    user-select: none;
+    width: 392px;
+    height: 559.4px;
+    border: 1px solid #d4d4d3;
+    border-radius: 8px;
+    box-shadow: 0 24px 56px -7px rgba(16,84,54,.06);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.lemin-captcha .captcha-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    max-height: 40px;
+    padding: 0.75rem 1rem;
+}
+
+.lemin-captcha .captcha-body {
+    width: 392px;
+    height: 519.4px;
+    overflow: hidden;
+    position: relative;
+}
+
+
+.lemin-captcha .piece-area {
+    position: absolute;
+    background-color: rgb(255, 255, 255);
+    user-select: none;
+    top: 392px;
+    left: 0px;
+    width: 392px;
+    height: 127.4px;
+    min-height: 80px;
+    border-top: 1px solid #d4d4d3;
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    padding: 25px 16px;
+}

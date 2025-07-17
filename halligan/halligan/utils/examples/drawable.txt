@@ -1,0 +1,21 @@
+```python
+def solve(frame: list[Frame]) -> None:
+    # First, annotate a part of frame with keypoints
+    # Each keypoint is a number in the image
+    keypoint_image = frames[1].show_keypoints(region="all")
+
+    # Get the start keypoint
+    draw_from_id = ask([keypoint_image], "{describe the start point}", answer_type="int")
+    draw_from = frames[1].get_keypoint(id=draw_from_id[0])
+
+    # Get the end keypoint
+    draw_to_id = ask([keypoint_image], "{describe the end point}", answer_type="int")
+    draw_to = frames[i].get_keypoint(id=draw_to_id[0])
+    
+    # Trace
+    path_ids = trace(keypoint_image, draw_from_id, draw_to_id, "avoid or follow ...")
+    path_keypoints = [frames[1].get_keypoint(id) for id in path_ids]
+
+    # Draw
+    draw(path_keypoints)
+```

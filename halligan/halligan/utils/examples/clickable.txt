@@ -1,0 +1,63 @@
+```python
+def solve(frames: list) -> None:
+    # Cycle through all choices
+    choices = get_all_choices(left_arrow, right_arrow, frame1)
+
+    # Initialize variables to track the best choice
+    target_score = ...
+    best_choice = None
+    best_difference = float('inf')
+
+    # Iterate through each choice to find the closest choice
+    for choice in choices:
+        # For details (i.e., dice number), use focus()
+        dice_patches = focus(choice.image, "dice")
+        numbers = ask(dice_patches, "What is the die number?", answer_type="int")
+        dice_sum = sum(numbers)
+
+        # For counting in 1 frame, use mark()
+        # You must mention the marking (red boxes) in your ask() question
+        marked_image = mark(choice.image, "rock")
+        rocks = ask([marked_image], "What is the number of rocks in the marked red boxes?", answer_type="int")
+
+        # Calculate the difference from the target
+        # Update the best choice if this one is closer
+        score = ...
+        difference = abs(target_score - score)
+
+        if 0 < difference < best_difference:
+            best_difference = difference
+            best_choice = choice
+
+    # Select the best choice
+    if best_choice:
+        best_choice.select()
+
+    # Click the submit button in Frame 3
+    submit_button = frame3.get_interactable(0)
+    click(submit_button)
+```
+
+```python
+def solve(frames: list) -> None:
+    # For counting or comparing between 2 frames, use compare()
+    # You must mention the marking (red boxes) in your compare() question
+    target_image = frame[2].image
+
+    # Example: comparing icons or objects
+    choices = get_all_choices(left_arrow, right_arrow, frame[1])
+    marked_images = mark([choice.image for choice in choices], "icon")
+
+    while True:
+        comparison = compare([marked_images], "Which image has the icon in the reference on the correct orbit number?", target_image)
+        marked_images = [img for img, flag in zip(marked_images, comparison) if flag]
+        choices = [choice for choice, flag in zip(choices, comparison) if flag]
+
+        if len(choices) == 1: 
+            choices[-1].select()
+            break
+
+    # Note: each choice has multiple icons to account for.
+    # Note: Use compare() when the task asks for matching from 2 frames.
+    # Note: Pay attention to "(number) x" symbols, they indicate the count, and type of objects required.
+```

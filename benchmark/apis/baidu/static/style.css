@@ -1,0 +1,167 @@
+html {
+    background-color: rgba(0, 0, 0, 0.2);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.passMod_dialog-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 330px;
+    padding: 0 20px;
+    background-color: #ffffff;
+    border-radius: 21px;
+    box-sizing: border-box;
+}
+
+.passMod_dialog-close-btn {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 22px;
+    height: 22px;
+    z-index: 99999;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCBAMAAAAReh3bAAAAJ1BMVEUAAABVVVVTU1NSUlJVVVVSUlJSUlJTU1NTU1NSUlJTU1NSUlJSUlKGKbhPAAAADHRSTlMAJOToKh/feWvjcmMWiOGbAAAA5klEQVRIx+3UoY0CYRCA0bnkkrugCNAAHkOwOBqAIvAUgKAAHKELBDUggIQpig1iR7zdDvjU/uaZmdn4FjYYhv0eotpPw1aP+v7L21Bimbv2ccmcSmQ+28coG0Qit+3rZ9YgEvd1gECAQIBAgECAQIBAgECAQIhAgECIQIBAiECAQIBMiuhBFkX0IAkBUkRn48w8R2c1kZxHVzVUNlaiRtxDnPqQdqgb1p4F53ZYcG6HGwHhRkAgQCBAIEAgQCBAIEAgQCBAIEAgQCREJESOH0LkVX/+DyFyqNe+IUSeUf03hMg1vtkb0A/Xcjy7PGYAAAAASUVORK5CYII=) center / cover no-repeat;
+    cursor: pointer;
+}
+
+.passMod_dialog-header {
+    position: relative;
+    height: 25px;
+    padding-top: 21px;
+    box-sizing: content-box;
+}
+
+.passMod_dialog-header p {
+    font-size: 15px;
+    color: #525252;
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.passMod_spin-wrapper {
+    position: relative;
+    width: 290px;
+}
+
+.passMod_spin-tip {
+    height: 28px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1F1F1F;
+}
+
+.passMod_spin-context-wrap {
+    position: relative;
+    margin-top: 16px;
+}
+
+.passMod_spin-context {
+    position: relative;
+    width: 152px;
+    height: 152px;
+    border-radius: 76px;
+    margin: auto;
+    overflow: hidden;
+}
+
+.passMod_spin-background {
+    display: block;
+    width: 152px;
+    height: 152px;
+}
+
+.passMod_spin-footer {
+    padding-top: 30px;
+    height: 84px;
+    box-sizing: border-box;
+}
+
+.passMod_slide-control {
+    position: relative;
+    height: 53px;
+    padding: 3px;
+    background-color: #f5f5f5;
+    border-radius: 27px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.passMod_slide-grand {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 0;
+    height: 48px;
+    border-radius: 27px;
+    background-color: #4E6FF2;
+    opacity: 0.2;
+    z-index: 0;
+}
+
+.passMod_slide-tip {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 53px;
+    line-height: 45px;
+    text-align: center;
+    color: #B8B8B8;
+}
+
+.slideShine {
+    letter-spacing: 0;
+    background: #b8b8b8 -webkit-linear-gradient(left, rgba(255, 255, 255, 0), #111 90%, rgba(255, 255, 255, 0)) no-repeat 0 0;
+    background: #b8b8b8 -moz-linear-gradient(left, rgba(255, 255, 255, 0), #111 90%, rgba(255, 255, 255, 0)) no-repeat 0 0;
+    background: #b8b8b8 -o-linear-gradient(left, rgba(255, 255, 255, 0), #111 90%, rgba(255, 255, 255, 0)) no-repeat 0 0;
+    background: #b8b8b8 -ms-linear-gradient(left, rgba(255, 255, 255, 0), #111 90%, rgba(255, 255, 255, 0)) no-repeat 0 0;
+    background: #b8b8b8 linear-gradient(to left, rgba(255, 255, 255, 0), #111 90%, rgba(255, 255, 255, 0)) no-repeat 0 0;
+    color: transparent;
+    background-size: 20% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    -webkit-animation: slideShine 2s linear infinite;
+    animation: slideShine 2s linear infinite;
+    -moz-animation: slideShine 2s linear infinite;
+    animation-play-state: running;
+}
+
+@keyframes slideShine {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+.passMod_slide-btn {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 30px;
+    z-index: 2;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIsAAACLCAMAAABmx5rNAAAAk1BMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ROyVeAAAAMHRSTlMA3eHZ7efk6c2t17HJ9PHD0bu4tb7Uxvv4wKiqOX1XZWFdBXRuTmklHUAwEwuORJxEXzexAAACiElEQVR42u2Z7XaiMBCGZ6EWi58gKlL8olXUtnbv/+o2jtKRk3X5kewJP97nCp7zziSZJAQAAAAAAAAAAAAAAAAAgJZT5Jv1saA2cIp+KZIzuecU+hcXz1s6j+Yz8n2fXbz4QG7Jw8rl+dnfkVPWIauwy3Pn65McsvzJxVMunUVJjtBdOt6KnLGUGrFLEHy7qJOeC7sE3RO5QFw4F1Z5egrW5ASpkVe5KLIPMsXcpXN1GYY5mWFeo1swQ8UbWeRw3m43zJrZX3iveLvxUrlIjdhlMOjZq9Mqe1H0er3JJI7jKIqSJFksRqPZbNbv97uK8Xg6nYZ/r5FyGXhHssMue72osMuEXa4qozuV8UWFc2GVuositXN0F5lyUdRcEnapZMb1XHSXNE0XBzKnVC6vVS6xopaLuIQ3F71fWGYe7MiYnFVE5j4XVpFctH33Lpf5fP5VmLuwjNToX7n4eo1Yhl1+d0tjl3q/xLKOHtRIzgBRucoMVxZq1JCLViNtHbGK4t1uLuIiDTN95CK9e5PZWciFW7ehd6VGD3JRzKzkwjLampZcGtZRJXOw3rsN60jbX8SltN27Sb1fHu11/zuXqN67rNJ0NqbW+kWat7a/zBr3uuCuRqmddZSJSnO/6OdRTWVpvNcZzi/sYmfftTG/sIv5eWQwv1g/p1s0v5QG84vtua74tjG/WHqqOpvPL96RrF0EDOcXuR+Z85HvVjW2FZu7K1ymu5jfG83fX1p0n5Z15PCdQX9/2ZMBVt9f3L1LiUuL3uuuvettyQ16745KcsdeauT83ft8m1/a8B9QJD97nfN/EsrHrfk/IjotLjLxkVpBvt62xAQAAAAAAAAAAAAAAAAAADX+AJacgXsNbgKZAAAAAElFTkSuQmCC) center / 47px no-repeat;
+    background-color: #4E6FF2;
+    box-shadow: 0 10px 24px 0 rgba(78, 111, 242, 0.3);
+}
+
+.passMod_dialog-footer {
+    height: 71.2px;
+}
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    margin: 0;
+    padding: 0;
+}

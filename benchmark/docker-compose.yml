@@ -1,0 +1,18 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - "3000:80"
+    hostname: 
+      benchmark
+      
+  browser:
+    image: mcr.microsoft.com/playwright:v1.52.0-noble
+    ports:
+      - "5000:5000"
+    init: true
+    working_dir: /home/pwuser
+    user: pwuser
+    command: >
+      /bin/sh -c "npx -y playwright@1.52.0 run-server --port 5000 --host 0.0.0.0"

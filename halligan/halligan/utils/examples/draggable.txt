@@ -1,0 +1,29 @@
+```python
+def solve(frame: list[Frame]) -> None:
+    # First, annotate a part of frame with keypoints
+    # Each keypoint is a number in the image
+    keypoint_image = frames[1].show_keypoints(region="all")
+
+    # Get the correct element to drag
+    drag_from = frames[1].get_interactable(0)
+
+    # Get the drag to keypoint
+    drag_to_id = ask([keypoint_image], "where is the missing spot?", answer_type="int")
+    drag_to = frames[i].get_keypoint(id=drag_to_id[0])
+
+    # Get the surrounding Points
+    neighbour_image = drag_to.show_neighbours()
+
+    # Secondary refinement
+    refined_answer = ask([neighbour_image], "where is the missing spot?", answer_type="int")
+
+    # Get the Point corresponding to the number answer
+    drag_to = keypoint.get_neighbour(id=refined_answer[0])
+    
+    # Drag from start to end
+    drag_choices = drag(start=drag_from, end=drag_to)
+
+    # Refine the release point by ranking the adjustments
+    ranks = rank([choice.image for choice in drag_choices], "Puzzle is fully in the missing spot")
+    drag_choices[ranks[0]].release()
+```

@@ -1,0 +1,187 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        html,
+        body,
+        #root {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        img {
+            overflow: clip;
+            overflow-clip-margin: content-box;
+        }
+
+        .container {
+            display: flex;
+            box-sizing: border-box;
+            position: relative;
+            flex-direction: column;
+            background-color: rgb(255, 255, 255);
+            border: 1px solid black;
+            max-width: 400px;
+            min-width: 300px;
+            min-height: 100%;
+            height: 100%;
+            overflow: auto;
+            color: rgb(47, 59, 70);
+        }
+
+        .container * {
+            box-sizing: border-box;
+        }
+
+        .content {
+            -webkit-box-flex: 1;
+            flex-grow: 1;
+            height: 100%;
+            width: 100%;
+            padding: 7px 24px;
+            display: flex;
+            box-sizing: border-box;
+            position: relative;
+            -webkit-box-align: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .logo {
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .header-text {
+            font-size: 1.5em;
+            font-family: Helvetica;
+            font-weight: 600;
+            margin: 24px 0px;
+            text-align: center;
+        }
+
+        .checkbox-instruction {
+            font-size: 1em;
+            font-family: Helvetica;
+            font-weight: 300;
+            margin: 0px;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .start-button {
+            padding: 12px 20px;
+            background: rgb(47, 59, 70);
+            letter-spacing: 0.4px;
+            color: rgb(255, 255, 255);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            line-height: 18px;
+            font-family: Helvetica;
+            font-weight: 600;
+            text-align: center;
+            margin: 6% 0px 0px;
+        }
+
+        .challenge-instruction {
+            font-size: 1em;
+            font-family: Helvetica;
+            font-weight: 300;
+            margin: 7px 0px 0px;
+        }
+
+        .challenge-container {
+            margin-top: 14px;
+            margin-bottom: 14px;
+        }
+
+        .challenge-tiles {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .challenge-tile {
+            width: 110px;
+            height: 110px;
+            display: block;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div lang="en" dir="ltr" class="container">
+        <!-- loading -->
+        <div class="loading content">
+            <p tabindex="-1" data-theme="home.instructions" class="instruction-text" style="margin-top: 200px;">Working,
+                please wait...</p>
+        </div>
+        <!-- checkbox -->
+        <div class="checkbox content" style="display: none;"><svg class="logo" tabindex="-1" aria-hidden="true"
+                width="80" height="91" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M1 18.246c0-3.49 2.865-6.318 6.399-6.318h4.737c.97 0 1.928-.2 2.815-.588l22.417-9.8a6.473 6.473 0 0 1 5.247.03l21.6 9.738a7.03 7.03 0 0 0 2.888.62h5.498c3.534 0 6.399 2.829 6.399 6.318v29.96c0 1.593-.61 3.127-1.706 4.295L43.992 87.977c-2.567 2.735-6.962 2.69-9.473-.095l-31.9-35.4A6.273 6.273 0 0 1 1 48.283V18.247Z"
+                    fill="url(#a)"></path>
+                <path clip-rule="evenodd"
+                    d="M1 18.246c0-3.49 2.865-6.318 6.399-6.318h4.737c.97 0 1.928-.2 2.815-.588l22.417-9.8a6.473 6.473 0 0 1 5.247.03l21.6 9.738a7.03 7.03 0 0 0 2.888.62h5.498c3.534 0 6.399 2.829 6.399 6.318v29.96c0 1.593-.61 3.127-1.706 4.295L43.992 87.977c-2.567 2.735-6.962 2.69-9.473-.095l-31.9-35.4A6.273 6.273 0 0 1 1 48.283V18.247Z"
+                    stroke="#fff" stroke-width=".556" style="mix-blend-mode: soft-light;"></path>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M62.317 30.034c.812.8.812 2.099 0 2.9L37.844 57.099a2.096 2.096 0 0 1-3.266-.422L19.734 42.019a1.907 1.907 0 0 1 0-2.721 1.966 1.966 0 0 1 2.756 0l13.754 13.58L59.38 30.035c.811-.801 2.126-.801 2.937 0Z"
+                    fill="#fff"></path>
+                <defs>
+                    <linearGradient id="a" x1="-11.697" y1="-11.79" x2="6.191" y2="85.003"
+                        gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#979797"></stop>
+                        <stop offset="1" stop-color="#5A5A5A"></stop>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h2 font-size="1.5" tabindex="-1" class="header-text">
+                Protecting your account</h2>
+            <p tabindex="-1" data-theme="home.instructions" class="checkbox-instruction">Please solve
+                this puzzle so we know you are a real person</p><button class="start-button"
+                data-theme="home.verifyButton">Start Puzzle</button>
+        </div>
+        <!-- challenge -->
+        <div class="challenge content" style="display: none;">
+            <div class="sc-1t9on73-1 jZITcz">
+                <h2 tabindex="-1" class="challenge-instruction"></h2>
+                <div class="challenge-container">
+                    <div class="challenge-tiles"><button
+                            id="tile-1" class="challenge-tile"
+                            tabindex="1" aria-label="Image 1 of 6."
+                            style="background-image: url(); background-position: 0% 0%; background-size: 300%;"></button><button
+                            id="tile-2" class="challenge-tile"
+                            tabindex="1" aria-label="Image 2 of 6."
+                            style="background-image: url(); background-position: 50% 0%; background-size: 300%;"></button><button
+                            id="tile-3" class="challenge-tile"
+                            tabindex="1" aria-label="Image 3 of 6."
+                            style="background-image: url(); background-position: 100% 0%; background-size: 300%;"></button><button
+                            id="tile-4" class="challenge-tile"
+                            tabindex="1" aria-label="Image 4 of 6."
+                            style="background-image: url(); background-position: 0% 100%; background-size: 300%;"></button><button
+                            id="tile-5" class="challenge-tile"
+                            tabindex="1" aria-label="Image 5 of 6."
+                            style="background-image: url(); background-position: 50% 100%; background-size: 300%;"></button><button
+                            id="tile-6" class="challenge-tile"
+                            tabindex="1" aria-label="Image 6 of 6."
+                            style="background-image: url(); background-position: 100% 100%; background-size: 300%;"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

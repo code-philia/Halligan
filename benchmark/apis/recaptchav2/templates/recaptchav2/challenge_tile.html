@@ -1,0 +1,249 @@
+<html dir="ltr" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>reCAPTCHA</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('recaptchav2.static', filename='styles__ltr.css') }}">
+</head>
+
+<body style="height: 100%;"><input type="hidden" id="recaptcha-token">
+    <div>
+        <div id="rc-imageselect" aria-modal="true" role="dialog">
+            <div class="rc-imageselect-response-field"></div><span class="rc-imageselect-tabloop-begin"
+                tabindex="0"></span>
+            <div class="rc-imageselect-payload">
+                <div class="rc-imageselect-instructions">
+                    <div class="rc-imageselect-desc-wrapper">
+                        <div class="rc-imageselect-desc-no-canonical" style="width: 352px; font-size: 12px;">Select all
+                            squares with <strong class="rc-keyword" style="font-size: 28px;"></strong><span
+                                class="rc-imageselect-carousel-instructions" style="font-size: 14px;">If there are none,
+                                click skip</span></div>
+                    </div>
+                    <div class="rc-imageselect-progress"></div>
+                </div>
+                <div class="rc-imageselect-challenge">
+                    <div id="rc-imageselect-target" class="rc-imageselect-target" dir="ltr" role="presentation"
+                        aria-hidden="true">
+                        <table class="rc-imageselect-table-44">
+                            <tbody>
+                                <tr>
+                                    <td role="button" tabindex="4" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:0%; left: 0%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="5" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:0%; left: -100%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="6" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:0%; left: -200%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="7" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:0%; left: -300%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td role="button" tabindex="8" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-100%; left: 0%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="9" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-100%; left: -100%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="10" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-100%; left: -200%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="11" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-100%; left: -300%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td role="button" tabindex="12" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-200%; left: 0%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="13" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-200%; left: -100%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="14" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-200%; left: -200%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="15" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-200%; left: -300%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td role="button" tabindex="16" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-300%; left: 0%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="17" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-300%; left: -100%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="18" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-300%; left: -200%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                    <td role="button" tabindex="19" class="rc-imageselect-tile"
+                                        aria-label="Image challenge">
+                                        <div class="rc-image-tile-target">
+                                            <div class="rc-image-tile-wrapper" style="width: 95px; height: 95px"><img
+                                                    class="rc-image-tile-44"
+                                                    src=""
+                                                    alt="" style="top:-300%; left: -300%">
+                                                <div class="rc-image-tile-overlay"></div>
+                                            </div>
+                                            <div class="rc-imageselect-checkbox"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="rc-footer">
+                <div class="rc-separator"></div>
+                <div class="rc-controls">
+                    <div class="primary-controls">
+                        <div class="verify-button-holder"><button class="rc-button-default goog-inline-block" title=""
+                                value="" id="recaptcha-verify-button" tabindex="0">Skip</button></div>
+                    </div>
+                    <div class="rc-challenge-help" style="display:none" tabindex="0"></div>
+                </div>
+            </div><span class="rc-imageselect-tabloop-end" tabindex="0"></span>
+        </div>
+    </div>
+</body>
+
+</html>

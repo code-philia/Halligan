@@ -1,0 +1,15 @@
+## Objective
+The task image contains ${frames} frame(s).
+
+First, provide one-sentence visual description of each frame.
+Second, identify the relationships between frames.
+Third, using the information, identify the sequential events and the final visual criteria that leads to solving the task.
+
+Use these Python tools:
+${tools}
+
+## Guidelines
+1. The output should be a Python block.
+2. The third step should be generic enough, it should not reveal the answer.
+3. In the third step, all event should begin with atomic verbs like `click`, `slide`, `drag`, `draw` and refer to choices/states rather than objects.
+4. Please describe rectangle boxes with hints (e.g., case sensitivity), instructions, or placeholders as input fields.

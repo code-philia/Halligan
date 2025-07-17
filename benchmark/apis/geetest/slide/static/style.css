@@ -1,0 +1,209 @@
+body {
+    color: #292f3a;
+    position: relative;
+    font-family: Arial,Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Heiti SC,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    -ms-touch-action: none;
+    touch-action: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.geetest_box {
+    position: absolute;
+    z-index: 99999;
+    overflow: hidden;
+    width: 100%;
+    border: 1px solid #dedede;
+    border-top: none;
+    margin: 0 auto;
+    background: #fff;
+    -webkit-box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    -ms-touch-action: none;
+    touch-action: none;
+}
+
+.geetest_header {
+    position: relative;
+    top: 0;
+    left: 0;
+    padding-bottom: 17.752%;
+}
+
+.geetest_status_bar {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 6px;
+    background-color: hsla(224,98%,66%,1);
+}
+
+.geetest_title {
+    position: absolute;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 88.76%;
+    height: 90%;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-animation: trans-opacity-scale .3s .1s forwards;
+    animation: trans-opacity-scale .3s .1s forwards;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    padding: 6px 5.88% 0;
+    color: #292f3a;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.geetest_container {
+    position: relative;
+    overflow: hidden;
+    height: 0;
+    padding-bottom: 76.924%;
+    z-index: 99;
+}
+
+.geetest_wrap {
+    padding: 0 5.62%;
+}
+
+.geetest_slide {
+    position: relative;
+    z-index: 99;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    display: block\9;
+    overflow: hiddzen;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    padding: 0 0 87.17%;
+}
+
+.geetest_window {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.geetest_slice {
+    position: absolute;
+    left: 0;
+    background-size: 100%;
+    cursor: pointer;
+}
+
+.geetest_slice_bg {
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+}
+
+.geetest_bg {
+    width: 100%;
+    padding-bottom: 66.7%;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    position: static;
+}
+
+.geetest_slider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 20%;
+}
+
+.geetest_track {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    padding-bottom: 6%;
+    background-color: #dee3eb;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.1);
+    box-shadow: inset 0 0 4px rgba(0,0,0,.1);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.geetest_btn {
+    z-index: 99999;
+    position: absolute;
+    top: -80%;
+    width: 26.83%;
+    padding-bottom: 16.77%;
+    border-radius: 36px;
+    -webkit-box-shadow: inset 0 -2px 0 rgba(0,0,0,.1);
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.1);
+    cursor: pointer;
+    background-image: linear-gradient(180deg, hsla(224, 98%, 71%, 1) 0%, hsla(224,98%,66%,1) 100%);
+}
+
+.geetest_arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 19px;
+    height: 16px;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    background-image: url(sprite@2x.png);
+    background-size: 1331.5789473684% 8831.25%;
+    background-position: 0 1.7179670723%;
+}
+
+.geetest_footer {
+    position: relative;
+    z-index: 99;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 18.935% 0 0;
+}
+
+.geetest_footer_right {
+    position: absolute;
+    top: 50%;
+    right: 5.88%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.geetest_box_logo {
+    display: inline-block;
+    width: 72px;
+    height: 16px;
+    cursor: pointer;
+    vertical-align: text-bottom;
+    background-image: url(sprite@2x.png);
+    background-size: 351.3888888889% 8831.25%;
+    background-position: 0 5.4402290623%;
+}

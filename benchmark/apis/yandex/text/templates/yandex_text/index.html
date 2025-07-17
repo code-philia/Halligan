@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Yandex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('yandex.text.static', filename='style.css') }}">
+    <script src="{{ url_for('yandex.text.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div class="ModalContent">
+        <div class="AdvancedCaptcha">
+            <div class="AdvancedCaptcha-View">
+                <img alt="Image challenge" src="">
+            </div>
+            <div class="AdvancedCaptcha-FormField">
+                <label class="AdvancedCaptcha-FormLabel">Enter the code from the image</label>
+                <input type="text" id="captcha" name="captcha" placeholder="Uppercase or lowercase letters"></input>
+            </div>
+            <div class="AdvancedCaptcha-FormActions">
+                <button type="submit" id="submit" aria-describedby="submit-description">
+                    Submit
+                </button>
+            </div>
+            <div class="AdvancedCaptcha-Footer">
+                <div class="AdvancedCaptcha-FooterLink">SmartCaptcha by Yandex Cloud</div>
+                <div class="AdvancedCaptcha-FooterSpace"></div>
+                <svg class="AdvancedCaptcha-FooterIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11 18.5625C15.1766 18.5625 18.5625 15.1766 18.5625 11C18.5625 6.82334 15.1766 3.4375 11 3.4375C6.82334 3.4375 3.4375 6.82334 3.4375 11C3.4375 15.1766 6.82334 18.5625 11 18.5625ZM11 20.625C16.3157 20.625 20.625 16.3157 20.625 11C20.625 5.68426 16.3157 1.375 11 1.375C5.68426 1.375 1.375 5.68426 1.375 11C1.375 16.3157 5.68426 20.625 11 20.625ZM8.85528 6.24171C9.44645 5.75611 10.2222 5.46546 11 5.46546C12.6736 5.46546 14.2167 6.59336 14.2167 8.409C14.2167 8.92624 14.1095 9.43266 13.8078 9.92185C13.5213 10.3865 13.1023 10.7646 12.6048 11.1132C12.3057 11.3227 12.1569 11.4663 12.0839 11.5642C12.0312 11.6348 12.0312 11.661 12.0313 11.686L12.0313 11.6872C12.0313 12.2567 11.5695 12.7185 11 12.7185C10.4305 12.7185 9.96876 12.2567 9.96876 11.6872C9.96876 10.5945 10.7163 9.9179 11.4214 9.42397C11.806 9.15451 11.9732 8.9675 12.0523 8.83924C12.1163 8.73548 12.1542 8.62111 12.1542 8.409C12.1542 7.9976 11.8192 7.52796 11 7.52796C10.718 7.52796 10.401 7.6411 10.1644 7.83546C9.9342 8.02457 9.84579 8.22978 9.84579 8.409C9.84579 8.97854 9.38408 9.44025 8.81454 9.44025C8.24499 9.44025 7.78329 8.97854 7.78329 8.409C7.78329 7.48351 8.25771 6.73257 8.85528 6.24171ZM11 16.5C11.7594 16.5 12.375 15.8844 12.375 15.125C12.375 14.3656 11.7594 13.75 11 13.75C10.2406 13.75 9.625 14.3656 9.625 15.125C9.625 15.8844 10.2406 16.5 11 16.5Z" fill="currentColor"></path></svg>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

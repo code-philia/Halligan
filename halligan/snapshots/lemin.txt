@@ -1,0 +1,12 @@
+- checkbox
+- text: I'm Human
+- iframe
+- text: Fit the piece to get verified
+- paragraph: powered by
+- link "Lemin logo":
+  - /url: https://www.leminnow.com/
+  - img "Lemin logo"
+- img
+- img
+- img
+- img

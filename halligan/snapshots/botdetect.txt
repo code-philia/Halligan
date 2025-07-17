@@ -1,0 +1,4 @@
+- text: "Retype the characters from the picture:"
+- img "Retype the CAPTCHA code from the image"
+- textbox "Retype the characters from the picture:"
+- button "Validate"

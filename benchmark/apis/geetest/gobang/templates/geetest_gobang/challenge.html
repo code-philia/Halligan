@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>GeeTest</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('geetest.gobang.static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="geetest_box" style="display: block;" role="dialog" aria-modal="true">
+        <div class="geetest_header">
+            <div class="geetest_title">
+                <div class="geetest_text_tips">Click and drop to line up five identical items in a row</div>
+            </div>
+            <div class="geetest_status_bar"></div>
+        </div>
+        <div class="geetest_container">
+            <div class="geetest_wrap">
+                <div class="geetest_winlinze">
+                    <div class="geetest_item-0 geetest_item">
+                        <div class="geetest_item-0-0-bg_a371cc1d geetest_item-0-0-bg geetest_itembg"
+                            style="left: 3%; top: 4%;"></div>
+                        <div class="geetest_item-0-0_a371cc1d geetest_item-0-0 geetest_itemimg"
+                            style="left: 3%; top: 4%;"></div>
+                        <div class="geetest_item-0-1-bg_a371cc1d geetest_item-0-1-bg geetest_itembg"
+                            style="left: 23%; top: 4%;"></div>
+                        <div class="geetest_item-0-1_a371cc1d geetest_item-0-1 geetest_itemimg"
+                            style="left: 23%; top: 4%;">
+                        </div>
+                        <div class="geetest_item-0-2-bg_a371cc1d geetest_item-0-2-bg geetest_itembg"
+                            style="left: 43%; top: 4%;"></div>
+                        <div class="geetest_item-0-2_a371cc1d geetest_item-0-2 geetest_itemimg"
+                            style="left: 43%; top: 4%;"></div>
+                        <div class="geetest_item-0-3-bg_a371cc1d geetest_item-0-3-bg geetest_itembg"
+                            style="left: 63%; top: 4%;"></div>
+                        <div class="geetest_item-0-3_a371cc1d geetest_item-0-3 geetest_itemimg"
+                            style="left: 63%; top: 4%;"></div>
+                        <div class="geetest_item-0-4-bg_a371cc1d geetest_item-0-4-bg geetest_itembg"
+                            style="left: 83%; top: 4%;"></div>
+                        <div class="geetest_item-0-4_a371cc1d geetest_item-0-4 geetest_itemimg"
+                            style="left: 83%; top: 4%;">
+                        </div>
+                    </div>
+                    <div class="geetest_item-1_a371cc1d geetest_item-1 geetest_item">
+                        <div class="geetest_item-1-0-bg_a371cc1d geetest_item-1-0-bg geetest_itembg"
+                            style="left: 3%; top: 23%;"></div>
+                        <div class="geetest_item-1-0_a371cc1d geetest_item-1-0 geetest_itemimg"
+                            style="left: 3%; top: 23%;">
+                        </div>
+                        <div class="geetest_item-1-1-bg_a371cc1d geetest_item-1-1-bg geetest_itembg"
+                            style="left: 23%; top: 23%;"></div>
+                        <div class="geetest_item-1-1_a371cc1d geetest_item-1-1 geetest_itemimg"
+                            style=" left: 23%; top: 23%;">
+                        </div>
+                        <div class="geetest_item-1-2-bg_a371cc1d geetest_item-1-2-bg geetest_itembg"
+                            style="left: 43%; top: 23%;"></div>
+                        <div class="geetest_item-1-2_a371cc1d geetest_item-1-2 geetest_itemimg"
+                            style="left: 43%; top: 23%;"></div>
+                        <div class="geetest_item-1-3-bg_a371cc1d geetest_item-1-3-bg geetest_itembg"
+                            style="left: 63%; top: 23%;"></div>
+                        <div class="geetest_item-1-3_a371cc1d geetest_item-1-3 geetest_itemimg"
+                            style="left: 63%; top: 23%;">
+                        </div>
+                        <div class="geetest_item-1-4-bg_a371cc1d geetest_item-1-4-bg geetest_itembg"
+                            style="left: 83%; top: 23%;"></div>
+                        <div class="geetest_item-1-4_a371cc1d geetest_item-1-4 geetest_itemimg"
+                            style="left: 83%; top: 23%;">
+                        </div>
+                    </div>
+                    <div class="geetest_item-2_a371cc1d geetest_item-2 geetest_item">
+                        <div class="geetest_item-2-0-bg_a371cc1d geetest_item-2-0-bg geetest_itembg"
+                            style="left: 3%; top: 42%;"></div>
+                        <div class="geetest_item-2-0_a371cc1d geetest_item-2-0 geetest_itemimg"
+                            style="left: 3%; top: 42%;"></div>
+                        <div class="geetest_item-2-1-bg_a371cc1d geetest_item-2-1-bg geetest_itembg"
+                            style="left: 23%; top: 42%;"></div>
+                        <div class="geetest_item-2-1_a371cc1d geetest_item-2-1 geetest_itemimg"
+                            style="left: 23%; top: 42%;">
+                        </div>
+                        <div class="geetest_item-2-2-bg_a371cc1d geetest_item-2-2-bg geetest_itembg"
+                            style="left: 43%; top: 42%;"></div>
+                        <div class="geetest_item-2-2_a371cc1d geetest_item-2-2 geetest_itemimg"
+                            style="left: 43%; top: 42%;"></div>
+                        <div class="geetest_item-2-3-bg_a371cc1d geetest_item-2-3-bg geetest_itembg"
+                            style="left: 63%; top: 42%;"></div>
+                        <div class="geetest_item-2-3_a371cc1d geetest_item-2-3 geetest_itemimg"
+                            style="left: 63%; top: 42%;"></div>
+                        <div class="geetest_item-2-4-bg_a371cc1d geetest_item-2-4-bg geetest_itembg"
+                            style="left: 83%; top: 42%;"></div>
+                        <div class="geetest_item-2-4_a371cc1d geetest_item-2-4 geetest_itemimg"
+                            style="left: 83%; top: 42%;"></div>
+                    </div>
+                    <div class="geetest_item-3_a371cc1d geetest_item-3 geetest_item">
+                        <div class="geetest_item-3-0-bg_a371cc1d geetest_item-3-0-bg geetest_itembg"
+                            style="left: 3%; top: 61%;"></div>
+                        <div class="geetest_item-3-0_a371cc1d geetest_item-3-0 geetest_itemimg"
+                            style="left: 3%; top: 61%;">
+                        </div>
+                        <div class="geetest_item-3-1-bg_a371cc1d geetest_item-3-1-bg geetest_itembg"
+                            style="left: 23%; top: 61%;"></div>
+                        <div class="geetest_item-3-1_a371cc1d geetest_item-3-1 geetest_itemimg"
+                            style="left: 23%; top: 61%;"></div>
+                        <div class="geetest_item-3-2-bg_a371cc1d geetest_item-3-2-bg geetest_itembg"
+                            style="left: 43%; top: 61%;"></div>
+                        <div class="geetest_item-3-2_a371cc1d geetest_item-3-2 geetest_itemimg"
+                            style="left: 43%; top: 61%;">
+                        </div>
+                        <div class="geetest_item-3-3-bg_a371cc1d geetest_item-3-3-bg geetest_itembg"
+                            style="left: 63%; top: 61%;"></div>
+                        <div class="geetest_item-3-3_a371cc1d geetest_item-3-3 geetest_itemimg"
+                            style="left: 63%; top: 61%;"></div>
+                        <div class="geetest_item-3-4-bg_a371cc1d geetest_item-3-4-bg geetest_itembg"
+                            style="left: 83%; top: 61%;"></div>
+                        <div class="geetest_item-3-4_a371cc1d geetest_item-3-4 geetest_itemimg"
+                            style="left: 83%; top: 61%;"></div>
+                    </div>
+                    <div class="geetest_item-4_a371cc1d geetest_item-4 geetest_item">
+                        <div class="geetest_item-4-0-bg_a371cc1d geetest_item-4-0-bg geetest_itembg"
+                            style="left: 3%; top: 80%;"></div>
+                        <div class="geetest_item-4-0_a371cc1d geetest_item-4-0 geetest_itemimg"
+                            style="left: 3%; top: 80%;">
+                        </div>
+                        <div class="geetest_item-4-1-bg_a371cc1d geetest_item-4-1-bg geetest_itembg"
+                            style="left: 23%; top: 80%;"></div>
+                        <div class="geetest_item-4-1_a371cc1d geetest_item-4-1 geetest_itemimg"
+                            style="left: 23%; top: 80%;">
+                        </div>
+                        <div class="geetest_item-4-2-bg_a371cc1d geetest_item-4-2-bg geetest_itembg"
+                            style="left: 43%; top: 80%;"></div>
+                        <div class="geetest_item-4-2_a371cc1d geetest_item-4-2 geetest_itemimg"
+                            style=" left: 43%; top: 80%;">
+                        </div>
+                        <div class="geetest_item-4-3-bg_a371cc1d geetest_item-4-3-bg geetest_itembg"
+                            style="left: 63%; top: 80%;"></div>
+                        <div class="geetest_item-4-3_a371cc1d geetest_item-4-3 geetest_itemimg"
+                            style="left: 63%; top: 80%;"></div>
+                        <div class="geetest_item-4-4-bg_a371cc1d geetest_item-4-4-bg geetest_itembg"
+                            style="left: 83%; top: 80%;"></div>
+                        <div class="geetest_item-4-4_a371cc1d geetest_item-4-4 geetest_itemimg"
+                            style="left: 83%; top: 80%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="geetest_footer">
+            <div class="geetest_footer_right">
+                <a class="geetest_box_logo_bdf9cb2e geetest_box_logo" href="https://www.geetest.com/first_page"
+                    target="_blank" tabindex="-1" aria-label="Geetest"></a>
+            </div>
+        </div>
+    </div>
+</body>

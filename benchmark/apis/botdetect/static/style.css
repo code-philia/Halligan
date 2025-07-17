@@ -1,0 +1,53 @@
+.captcha {
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 18px;
+    color: #404038;
+}
+
+.captcha label {
+    display: block;
+    padding: 0;
+    margin: 0 0 6px 0;
+}
+
+.BDC_h50 {
+    height: 50px !important;
+}
+
+.BDC_w250 {
+    width: 250px !important;
+}
+
+.BDC_w280 {
+    width: 280px !important;
+}
+
+.BDC_CaptchaDiv {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+.BDC_CaptchaImageDiv {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    vertical-align: top !important;
+    zoom: 1 !important;
+}
+
+.validationDiv {
+    display: flex;
+    gap: 4px;
+    padding: 0px 0px 5px 0px;
+    margin: 8px 0px 0px 0px;
+}
+
+.validationDiv #captchaCode {
+    flex: 70 1 auto;
+}
+
+.validationDiv #validateCaptchaButton {
+    flex: 30 1 auto;
+}

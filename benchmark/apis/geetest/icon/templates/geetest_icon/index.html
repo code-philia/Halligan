@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GeeTest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('hcaptcha.static', filename='style.css') }}"> -->
+    <script src="{{ url_for('geetest.icon.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+<body>
+    <iframe id="geetest_icon" src="{{ url_for('geetest.icon.challenge') }}" frameborder="0" scrolling="no" style="border: 0px; position: relative; width: 340px; height: 385px"></iframe>
+</body>
+</html>

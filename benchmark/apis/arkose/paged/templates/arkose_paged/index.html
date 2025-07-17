@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Arkose</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <script src="{{ url_for('arkose.paged.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+<body>
+    <iframe src="{{ url_for('arkose.paged.challenge') }}" id="funcaptcha" title="Visual Challenge" tabindex="0" frameborder="0" scrolling="no" style="width: 400px; height: 450px;"></iframe>
+</body>
+</html>
+

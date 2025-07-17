@@ -1,0 +1,20 @@
+```python
+def solve(frames: list[Frame]) -> None:
+    choices = explore(frames[1])
+
+    # Option 1: check whole image of all choices at once
+    rank([choice.preview for choice in choices], "Which image is complete?")
+
+    # Option 2: check rows and columns
+    for choice in choices:
+        grid = choice.grid
+        for row in grid:
+            for element in row:
+                ...
+        
+        for col in zip(*grid):
+            for element in col:
+                ...
+
+    # Note: identical rows may imply rows, columns, diagonals
+```

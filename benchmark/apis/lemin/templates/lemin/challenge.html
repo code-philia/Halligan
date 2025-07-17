@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Lemin</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('lemin.static', filename='style.css') }}">
+    <style>
+        @font-face {
+            font-family: "silka";
+            src: url("{{ url_for('lemin.static', filename='silka-semibold-webfont.woff2') }}");
+        }
+    </style>
+</head>
+<body>
+    <div class="lemin-captcha-popup">
+        <div class="lemin-captcha-caption" style="max-width: 392px;">Fit the piece to get verified</div>
+        <div class="lemin-captcha">
+            <div class="captcha-header">
+                <div style="align-items: flex-end; display: flex; flex-direction: row; opacity: 0.4;">
+                    <p style="color: #404043; font-size: 10px; letter-spacing: 1px; line-height: 8px; text-transform: uppercase;">
+                        powered by
+                    </p>
+                    <a href="https://www.leminnow.com/" target="_blank" style="align-items: center; display: flex;">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADEAAAAQCAYAAAC/bJePAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJXSURBVHgBzVbRcRMxEN092wx/mA4uFWAqQIZhJn+ECuJUEKgApwLiCmwqIPwxE/ApFSSuAFFBzC8en3hr6Xy6811iT0hyb0bW3mq10q5WT2ZqGJR6M0YXo020/vml2uZtj8geoB1Hke0xNQwI4hpd13/O0c7QNNofIpbNvxKzfIYdNioIpfZjosVniAdbTpEgmxVEBqVUTBQpZP6QCllfARu3E2Z7liTJhSgeLQilXo+dxLqu9p2d6jJ3Xlibxqh/PZ1Of5dt2nA2cGJktP6h6cHAA9db+akNAhFKyVz4Vok2nPmMpBNyF+ihoF3HV3RHtLcxcjUqtNeZa31+VRzbj7X+bop2T81NOoflkRfm1b6ERhddnISmW8CgNOtEC16eHpU3CEdyUipQG5TeewnGlSKDTewIvdDiceD6FPrnEA5DHUr2o/Odr0v05ITo71fng7EHm70VhfVo1yB8AIl3JowAZyxy1313XmLhxOt2wUAucjEImrlk1ALrLff8/dhAVD9v8Y7W2Yj6CBCbXvb9YNeNp31al4M1zGmPOVK5j0qdKq8E3zi11aOW2QzBRDH603y99cnsEkT44KSXLnOty2AhqVeTB8EGvD1LknNhEVOhuwU2KJf0m6fSWaZh5md1M2+62CaQB5vDrRndE6Iout7FPgyih4v6yYks2Q0yY/ccBbdjyLBZnqCu70yN/wtBOcmfKx66Zj9gk6P8iBkbb/3Ct1x0hWljeUmpIZCTMJtq9jq5uG3QZjrwLDR3bJKOAqbI5ofMsY2u9L06fUMFSFnZkm4T/wD2KAYZfwwUagAAAABJRU5ErkJggg==" alt="Lemin logo">
+                    </a>
+                </div>
+            </div>
+            <div class="captcha-body" style="width: 392px; height: 519.4px;">
+                <div class="captcha" style="display: block;">
+                    <div class="piece-area"></div>
+                    <div id="image-area" style="position: absolute;">
+                        <div style="overflow: hidden; width: 392px; height: 392px;" id="background-image">
+                            <img name="background-image"
+                                style="max-width: none; max-height: none; width: 1156.4px; height: 392px;"
+                                src=""
+                                width="1156" height="392">
+                        </div>
+                    </div>
+                    <div id="pieces">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

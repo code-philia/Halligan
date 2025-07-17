@@ -1,0 +1,16 @@
+```python
+def solve(frames: list) -> None:
+    # Extract the CAPTCHA text from the image in Frame 1
+    captcha_image = frames[1].image
+    captcha_text = "iPmhr"  # Manually identified from the image
+
+    # Get the input field element in Frame 1
+    input_field = frames[1].get_interactable(0)
+
+    # Enter the CAPTCHA text into the input field
+    enter(input_field, captcha_text)
+
+    # Click the "Next" button to submit
+    next_button = frames[1].get_interactable(1)
+    click(next_button)
+```

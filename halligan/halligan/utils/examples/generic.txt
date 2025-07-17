@@ -1,0 +1,24 @@
+```python
+def solve(frames: list[Frame]) -> None:
+    # Get all choices using the interactables
+    # Gather information about each choice
+
+    scores = []
+    for choice in choices:
+        # Get subtasks or annotate tasks for better reasoning
+        zoom() / focus()
+
+        # Reason about subtasks
+        ask() / rank()
+    
+        # Score that combines tools + results from ask()
+        match()
+
+        scores.append(score)
+
+    for choice, score in zip(choices, scores):
+        # From scores, find the closest possible answers using metrics like rank, difference, similarity, or distance
+        # Exact match (==) is illegal.
+
+    # Select answers by acting on interactables
+```

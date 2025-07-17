@@ -1,0 +1,8 @@
+- iframe
+- heading "Pick the image where the number matches the amount of animals (1 of 1)" [level=2]
+- button "Image 1 of 6."
+- button "Image 2 of 6."
+- button "Image 3 of 6."
+- button "Image 4 of 6."
+- button "Image 5 of 6."
+- button "Image 6 of 6."

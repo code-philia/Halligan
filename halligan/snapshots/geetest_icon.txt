@@ -1,0 +1,9 @@
+- iframe
+- dialog:
+  - text: "Select in this order:"
+  - img
+  - img
+  - img
+  - text: OK
+  - link "Geetest":
+    - /url: https://www.geetest.com/first_page

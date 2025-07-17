@@ -1,0 +1,6 @@
+- img "Image challenge"
+- text: Enter the code from the image
+- textbox "Uppercase or lowercase letters"
+- button "Submit"
+- text: SmartCaptcha by Yandex Cloud
+- img

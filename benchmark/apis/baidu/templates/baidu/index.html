@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Baidu Rotation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('baidu.static', filename='style.css') }}">
+    <script src="{{ url_for('baidu.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div class="passMod_dialog-container">
+        <div class="passMod_dialog-close-btn"></div>
+        <div class="passMod_dialog-header">
+            <p>Baidu CAPTCHA</p>
+        </div>
+        <div class="passMod_dialog-body">
+            <div class="passMod_code-container">
+                <div class="passMod_verify-item passMod_spin-wrapper" id="spin-0">
+                    <div class="passMod_spin-tip">
+                        Please rotate image upright.
+                    </div>
+                    <p class="passMod_spin-msg"></p>
+                    <div class="passMod_spin-context-wrap">
+                        <div class="passMod_spin-context">
+                            <img class="passMod_spin-background"
+                                src="https://passport.baidu.com/cap/img?ak=1e3f2dd1c81f2075171a547893391274&amp;id=5082-BgoZ8csF4f9p7Avf6WEUFF2zI11VO0%2ByMO2IWkII2YbUqsM6HVAgscX2J9HJ6yTOe%2BChWQdrSaN%2Fax9mvWfYy%2BIN%2BKZ3sWLT3Uardh5cU9NB4MvhzR8rIV4vXOkZSE0Ha97sS%2FCXgVjY4MPnmDOnsohGs5crVthtDR%2FH7yfpTXRaeBA%2Fxx4BKlrEl2Pf6j2cAFRLrWn9RxsvW19UlS14Jk%2F9zUqFbhncK3CogxCSEpWskUadpYr%2FSkgTOA%2FiKKaD&amp;tk=3025uZOp5ln%2Fb5oW%2F%2BLuUfCjHZJnIV9%2F5LdexvB9zXG0a6qPTB9h%2FprpYe0ubg7SDrolyxpfYhaXnPiFz1Jv%2B1X8qOaqYZTPb2qm0eNSNB%2BooZXKofmj398PbXEG8w7i%2B%2FFyQXRSOi2CuBJgvWVucspyIg%3D%3D"
+                                alt="">
+                            <img class="passMod_spin-coordinate"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcoAAAHLBAMAAAC67sVKAAAAG1BMVEUAAAD////////////////////////////////rTT7CAAAACXRSTlMAzGcNwPRatBpQE/jnAAACgUlEQVR42uzZMW5TURRF0a9kAtyIAfAYQYpMABgBRXqUKdBQMnSeaaCMhWLjc9ZqXFpb1tH9Xz4ACPLzKHD//Shw93AUeHr/eORb8+GId/9pvhzx7mYKhvk0UzDMNZM/zD3LyR/mnmXBMPcsC4a5ZvKHeZpl/jD3LAuGuWdZMMw1kz/M0yzzh7lnWTDMPcuCYa6Z/GGeZpk/zD3LgmHuWRYMc83kD/M0y/xh7lkWDHPPsmCYa6ZgmC8fT2Yefn9+O5LNvDvydVQCgHupUmUalTk6KgHAvVSpMo3KHB2VAOBeqlSZRmWOjkoAcC9VqkyjMkdHJQC4lypVplGZo6MSANxLlSrTqMzRUQkA7qVKlWlU5uioBAD3UqXKNCpzdFQCgHupUmUalTk6KgHAvVSpMo3KHB2VAOBeqlSZRmWOjkoAcC9VqkyjMkdHJQC4lypVprlA5cvjcbbbq1yfr555icq5fubbW9OQuaYhc01D5pqGzDUNmWsaMtdcPfMi9/LqmZes/JM5+2sv+fH8/PXtv+jvzIbKndlQOT8aKit+y9ybuRoi/4d7+QoBzz6v4DnWO0nh++U/Rt7G0/q5kTdZeXbkLVaeH3mDlVeP9D9JkI5KAHAvVapMozJHRyXwq706qAEAgIEQ5t/1ZCzhWge8APxSpcoalR0blQDglypV1qjs2KgEAL9UqbJGZcdGJQD4pUqVNSo7NioBwC9VqqxR2bFRCQB+qVJljcqOjUoA8EuVKmtUdmxUAoBfqlRZo7JjoxIA/FKlyhqVHRuVAOCXKlXWqOzYqAQAv1SpskZlx0YlAPilSpU1Kjs2KgHAL1WqrFHZsVEJAH6pUmWNyo6NyhcHG9iGwGNCx5QAAAAASUVORK5CYII=">
+
+                            <div class="passMod_verify-container passMod_verify-container_1BqJ undefined"
+                                style="z-index: -1;">
+                                <div class="passMod_verify-pending">
+                                    <img src="data:image/png;base64,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"
+                                        alt="">
+                                    <span>正在验证...</span>
+                                </div>
+                                <div class="passMod_verify-success">验证通过</div>
+                                <div class="passMod_verify-fail">图片未转正</div>
+                                <div class="passMod_verify-network">网络不给力，请刷新重试</div>
+                                <div class="passMod_verify-loading">
+                                    <img src="data:image/png;base64,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"
+                                        alt="">
+                                    <span>加载中...</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="passMod_spin-footer">
+
+                            <div class="passMod_slide-control passMod_slide-control_hZg8">
+                                <div class="passMod_slide-grand"></div>
+                                <p class="passMod_slide-tip slideShine">Drag slider to rotate image</p>
+                                <div class="passMod_slide-btn "></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="passMod_dialog-footer">
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>hCaptcha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('hcaptcha.static', filename='style.css') }}"> -->
+    <script src="{{ url_for('hcaptcha.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+<body>
+    <iframe id="checkbox" src="{{ url_for('hcaptcha.checkbox') }}" title="widget containing checkbox for hCaptcha security challenge" tabindex="0" frameborder="0" scrolling="no" style="width: 303px; height: 78px; overflow: hidden;"></iframe>
+    <div id="test" style="background-color: rgb(255, 255, 255); border: 1px solid rgb(215, 215, 215); box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 4px; border-radius: 4px; left: auto; position: absolute; pointer-events: auto; transition: opacity 0.15s ease-out 0s; opacity: 0; visibility: hidden; display: block;">
+        <div id="challenge" style="position: relative; z-index: 1; width: 520px; height: 686px;">
+        </div>
+    </div>
+</body>
+</html>
+

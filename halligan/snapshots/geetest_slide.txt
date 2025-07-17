@@ -1,0 +1,5 @@
+- iframe
+- dialog:
+  - text: Slide to complete the puzzle
+  - link "Geetest":
+    - /url: https://www.geetest.com/first_page

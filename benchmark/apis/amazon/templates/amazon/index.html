@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Amazon WAF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('amazon.static', filename='style.css') }}">
+    <script src="{{ url_for('amazon.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div id="captcha-container" dir="ltr" style="width: 320px; margin: 0px auto;">
+        <div id="root" style="font-family: Amazon Ember, Helvetica, Arial, sans-serif; width: 100%;">
+            <div class="amzn-captcha-modal" style="min-width: 180px; max-width: 640px; height: auto; margin: 0px auto;">
+                <div class="amzn-captcha-modal-title" style="font-size: 1.5em; margin-bottom: 20px;">Solve the Puzzle</div>
+                <div></div>
+                <div style="margin-bottom: 10px;">
+                    <div tabindex="-1" style="outline-color: rgba(0, 0, 0, 0);">
+                        <div style="margin-bottom: 0.5em;">Place a dot at the end of the car's path</div>
+                        <div style="position: relative;"><canvas width="320" height="320"></canvas>
+                            <div class="amzn-grid-focus" style="width: 104px; height: 104px; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 20px;">
+                    <div style="display: flex; flex-direction: row; justify-content: center;">
+                        <div style="position: fixed; z-index: 20; top: 200px; display: none;">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; justify-content: center;">
+                        <button id="amzn-btn-verify-internal" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

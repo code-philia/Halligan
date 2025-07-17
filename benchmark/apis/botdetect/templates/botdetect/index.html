@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BotDetect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('botdetect.static', filename='style.css') }}">
+    <script src="{{ url_for('botdetect.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+</head>
+
+<body>
+    <div class="captcha">
+        <label for="captchaCode">Retype the characters from the picture:</label>
+        <div id="captchaDemoChallenge">
+            <div class="BDC_CaptchaDiv BDC_w280 BDC_h50 " id="CaptchaDiv">
+                <div class="BDC_CaptchaImageDiv BDC_w250 BDC_h50" id="CaptchaImageDiv">
+                    <img
+                        id="CaptchaImage"
+                        alt="Retype the CAPTCHA code from the image"
+                        src=""
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="validationDiv BDC_w250">
+            <input name="captchaCode" type="text" id="captchaCode" autocomplete="off" class="BDC_TextUppercase">
+            <input type="submit" name="validateCaptchaButton" value="Validate" id="validateCaptchaButton">
+        </div>
+    </div>
+</body>
+
+</html>

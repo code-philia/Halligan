@@ -1,0 +1,15 @@
+- iframe
+- heading "Use the arrows to rotate the object to face in the direction of the hand. (1 of 1)" [level=2]:
+  - strong: Use the arrows
+  - text: to
+  - strong: rotate the object
+  - text: to face in the
+  - strong: direction of the hand
+  - text: . (1 of 1)
+- img
+- img "Image 1 of 6."
+- button "Navigate to previous image":
+  - img
+- button "Navigate to next image":
+  - img
+- button "Submit"

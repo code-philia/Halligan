@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lemin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+    <script src="{{ url_for('lemin.static', filename='script.js') }}"></script>
+    <script>
+        init('{{ id }}')
+    </script>
+    <style>
+        .lemin-captcha-input-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #D4D4D3;
+            box-sizing: border-box;
+            border-radius: 4px;
+            width: 300px;
+            height: 64px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            background-color: #F7F7F6;
+            background-repeat: no-repeat;
+            background-position: calc(100% - 13px) bottom;
+            background-image: url(data:image/png;base64,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);
+        }
+
+        .lemin-captcha-checkbox {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .lemin-captcha-checkmark {
+            border: 1px solid #D4D4D3;
+            box-sizing: border-box;
+            border-radius: 2px;
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background-color: #FFFFFF;
+        }
+
+        .lemin-captcha-label {
+            display: flex;
+            align-items: center;
+            line-height: 1.5rem;
+            margin: 0 0.5rem;
+            font-family: silka,Poppins,sans-serif;
+            font-size: 1rem;
+            font-style: normal;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lemin-captcha-input-box">
+        <a class="lemin-captcha-checkbox">
+            <input type="checkbox" id="LcynuYgvlemin-captcha-check"
+                style="position: absolute; opacity: 0; width: 0; height: 0;"> 
+            <span class="lemin-captcha-checkmark"></span>
+            <span class="lemin-captcha-label">I'm Human</span>
+        </a>
+    </div>
+    <iframe id="lemin-challenge" src="{{ url_for('lemin.challenge') }}" frameborder="0" scrolling="no" style="width: 460px; height: 660px; position: absolute; z-index: 1;"></iframe>
+</body>

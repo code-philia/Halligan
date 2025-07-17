@@ -1,0 +1,15 @@
+.btn {
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 5px 17px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #FF9902;
+    color: black;
+    border: 1px solid #FF9902;
+    font-weight: bold;
+}

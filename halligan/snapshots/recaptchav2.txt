@@ -1,0 +1,11 @@
+- iframe
+- iframe
+- checkbox "I'm not a robot"
+- link "Privacy":
+  - /url: https://www.google.com/intl/en/policies/privacy/
+- link "Terms":
+  - /url: https://www.google.com/intl/en/policies/terms/
+- dialog:
+  - text: Select all images with
+  - strong: crosswalks
+  - button "Skip"

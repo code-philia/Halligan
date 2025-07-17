@@ -1,0 +1,2 @@
+- text: Solve the Puzzle Place a dot at the end of the car's path
+- button "Submit"

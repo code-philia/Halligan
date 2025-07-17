@@ -1,0 +1,30 @@
+- iframe
+- iframe
+- img
+- text: I am human
+- link "Visit hcaptcha.com to learn more about the service and its accessibility options.":
+  - /url: https://www.hcaptcha.com/what-is-hcaptcha-about?ref=accounts.hcaptcha.com&utm_campaign=a5f74b19-9e45-40e0-b45d-47ff91b7a6c2&utm_medium=checkbox
+  - img
+- text: Privacy - Terms
+- heading "Please click on objects that are more expensive than a television" [level=2]
+- paragraph: If there are None, click Skip
+- button "Challenge Image 1":
+  - img
+- button "Challenge Image 2":
+  - img
+- button "Challenge Image 3":
+  - img
+- button "Challenge Image 4":
+  - img
+- button "Challenge Image 5":
+  - img
+- button "Challenge Image 6":
+  - img
+- button "Challenge Image 7":
+  - img
+- button "Challenge Image 8":
+  - img
+- button "Challenge Image 9":
+  - img
+- text: EN
+- button "Skip Challenge": Skip

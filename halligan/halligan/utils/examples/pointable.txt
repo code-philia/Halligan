@@ -1,0 +1,31 @@
+```python
+def solve(frames: list[Frame]) -> None:
+    # First, annotate a part of frame with keypoints
+    # Each keypoint is a number in the image
+    # Be mindful of ambiguous instructions, as phrases like 'end of the car's path' refers to the car's destination, not where the car is
+    keypoint_image = frames[0].show_keypoints(region="bottom")
+
+    # Next, ask questions related to task
+    # Note: frames are illegal, PIL.Images only
+    answer = ask([keypoint_image], "point to the largest animal", answer_type="int")
+
+    # Get the Point corresponding to the number answer
+    keypoint = frames[0].get_keypoint(id=answer[0])
+
+    # Get the surrounding Points
+    neighbour_image = keypoint.show_neighbours()
+
+    # Secondary refinement
+    refined_answer = ask([neighbour_image], "point to the largest animal", answer_type="int")
+
+    # Get the Point corresponding to the number answer
+    keypoint = keypoint.get_neighbour(id=refined_answer[0])
+
+    # Finally, point to the keypoint
+    point(to=keypoint)
+
+    # Hint: Be mindful of ambiguous instructions, as phrases like "end of the car's path" 
+    # might refer to the path's endpoint rather than the car's rear.
+
+    # Hint: show_keypoints() is necessary before get_keypoint()
+```

@@ -1,0 +1,6 @@
+- paragraph: Baidu CAPTCHA
+- text: Please rotate image upright.
+- paragraph
+- img
+- text: 正在验证... 验证通过 图片未转正 网络不给力，请刷新重试 加载中...
+- paragraph: Drag slider to rotate image

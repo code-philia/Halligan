@@ -1,0 +1,24 @@
+You are given a list of frames, their descriptions, relationships between frames, and the main task objective.
+
+Descriptions:
+${descriptions}
+
+Relations: 
+${relations}
+
+Objective: 
+${objective}
+
+Write a Python script `def structure_abstraction(frames: list[Frame])` to identify 
+all element/frame-level interactables using these tools:
+
+${tool_docs}
+
+## Guidelines
+1. Use NEXT only when a submit or skip button (either text or icon) is present. If neither is found, omit NEXT.
+2. Ensure there is either zero or one NEXT, while maintaining exactly one other interactable type.
+3. Treat the dependent frame in a relationship as non-interactable.
+4. Prioritize extracting all interactables over solving the task.
+5. Choose either interactable frames or elements, but stick to one type for consistency.
+6. Ensure that frames are only marked with frame interactable types, and elements are only marked with element interactable types.
+7. When using split() and grid(), remember to mark the subframes/elements as interactables.

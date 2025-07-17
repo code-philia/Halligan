@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>reCAPTCHAv2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('recaptchav2.static', filename='styles.css') }}">
+        <script src="{{ url_for('recaptchav2.static', filename='script.js') }}"></script>
+        <script>
+            init('{{ id }}')
+        </script>
+        <style>
+            @import url("{{ url_for('recaptchav2.static', filename='roboto.woff2') }}");
+            html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                outline: 0;
+                font-family: Roboto,helvetica,arial,sans-serif;
+                font-size: 14px;
+                vertical-align: baseline
+            }
+
+            input {
+                font-family: Roboto,helvetica,arial,sans-serif;
+                font-size: 14px
+            }
+
+            #challenge-wrapper {
+                opacity: 0;
+                visibility: hidden;
+                display: block;
+                background-color: rgb(255, 255, 255);
+                border: 1px solid rgb(204, 204, 204);
+                box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px;
+                position: absolute;
+                pointer-events: auto;
+                transition: visibility 0s linear 0s, opacity 0.3s linear 0s;
+                z-index: 2000000000;
+                left: auto;
+            }
+
+            #challenge-wrapper.show {
+                opacity: 1;
+                visibility: visible;
+            }
+        </style>
+    </head>
+    <body>
+        <iframe id="checkbox" title="reCAPTCHA" src="{{ url_for('recaptchav2.checkbox') }}"
+            width="304" height="78" role="presentation" frameborder="0" scrolling="no"></iframe>
+
+        <div id="challenge-wrapper">
+            <div id="challenge" style="position: relative; z-index: 1; width: 1002px; height: 1003px;">
+            </div>
+        </div>
+    </body>
+</html>
