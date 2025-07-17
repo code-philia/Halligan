@@ -3,10 +3,11 @@
 [![Paper](https://img.shields.io/badge/Paper-green)](http://linyun.info/publications/usenix-sec25.pdf)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-📢 [[Project Page](https://halligan.pages.dev/)] [[Examples](https://github.com/gyataro/halligan-examples)] [[Zenodo](https://zenodo.org/records/15709075)] [[Models](https://huggingface.co/code-philia/GUIPilot)]
+📢 [[Project Page](https://halligan.pages.dev/)] [[Examples](https://github.com/gyataro/halligan-examples)] [[Zenodo](https://zenodo.org/records/15709075)] [[Models](https://huggingface.co/code-philia/halligan-models/tree/main)]
 
 Halligan is a vision-language model (VLM) agent designed to solve visual CAPTCHA challenges. It is published in *"Are CAPTCHAs Still Bot-hard? Generalized Visual CAPTCHA Solving with Agentic Vision Language Model"* (USENIX Security'25)
 
+> [!IMPORTANT] 
 > **Disclaimer:**
 > Halligan is provided strictly for *research purposes* only. By using this tool, you agree to:
 > - Abide by ethical principles of Internet and AI usage
