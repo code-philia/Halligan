@@ -15,7 +15,7 @@ The repository is organized as follows:
 - `/models`: Manages instances of large vision models (LVM) for tasks like object detection and image segmentation. Currently supports `GroundingDINO`, `FastSAM`, and `CLIP`. These models are used for component extraction during CAPTCHA metamodel construction and are wrapped as vision tools during the solution composition stage.
 - `/prompt`: Contains prompt templates used for objective identification, structure abstraction, and the solution composition stage.
 - `/stages`: Implements the objective identification, structure abstraction, and solution composition stage.
-- `/utils`: 
+- `/utils`:
     - `/examples`: Provides documented examples for using each tool for in-context learning.
     - `vision_tools.py`: Implements vision tools (mark, focus, compare, rank, match, ask).
     - `action_tools.py`: Implements action tools (type, swap, click, slide, drag).

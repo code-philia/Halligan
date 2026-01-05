@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import rank
 from halligan.utils.action_tools import slide_x
+from halligan.utils.vision_tools import rank
 
 
 def stage1(frames):
@@ -12,8 +12,8 @@ def stage2(frames):
     # Frame 2: Slider, interactable
 
     # Get the slider element in Frame 2
-    slider_element = frames[2].get_element(position='left', details='arrow slider')
-    slider_element.set_element_as('SLIDEABLE_X')
+    slider_element = frames[2].get_element(position="left", details="arrow slider")
+    slider_element.set_element_as("SLIDEABLE_X")
 
 
 def stage3(frames):

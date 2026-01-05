@@ -63,8 +63,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state
             })
         }

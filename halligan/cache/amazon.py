@@ -1,5 +1,5 @@
+from halligan.utils.action_tools import click, point
 from halligan.utils.vision_tools import ask
-from halligan.utils.action_tools import point, click
 
 
 def stage1(frames):
@@ -8,10 +8,10 @@ def stage1(frames):
 
 def stage2(frames):
     frame_0 = frames[0]
-    submit_button = frame_0.get_element(position='down', details="orange button with 'Submit' text")
-    submit_button.set_element_as(interactable='NEXT')
+    submit_button = frame_0.get_element(position="down", details="orange button with 'Submit' text")
+    submit_button.set_element_as(interactable="NEXT")
     frame_1 = frames[1]
-    frame_1.set_frame_as(interactable='POINTABLE')
+    frame_1.set_frame_as(interactable="POINTABLE")
     return frames
 
 

@@ -1,78 +1,64 @@
-import re
-import ast
-from typing import List
-from textwrap import indent
-
 import halligan.prompts as Prompts
 from halligan.agents import Agent
-from halligan.utils.toolkit import Toolkit
+from halligan.mcp.client import InProcessMCPClient
+from halligan.mcp.policy import MCPPolicy
+from halligan.mcp.resources import ResourceStore
+from halligan.mcp.server import InProcessMCPServer
+from halligan.mcp.session import request_json_with_mcp
+from halligan.runtime.errors import ParseError, ValidationError
+from halligan.runtime.executor import apply_stage2_plan
+from halligan.runtime.schemas import validate_stage2
 from halligan.utils.constants import Stage
-from halligan.utils.layout import Frame, Element, get_observation
+from halligan.utils.layout import Frame, get_observation
 from halligan.utils.logger import Trace
-
 
 stage = Stage.STRUCTURE_ABSTRACTION
 
 
-toolkit = Toolkit(
-    tools=[
-        Frame.get_element,
-        Frame.split,
-        Frame.grid,
-        Frame.set_frame_as,
-        Element.set_element_as
-    ],
-    dependencies={
-        **globals(),
-        "List": List,
-        "__builtins__": __builtins__, 
-    }
-)
-
-
 @Trace.section("Structure Abstraction")
-def structure_abstraction(agent: Agent, frames: list[Frame], objective: str) -> None: 
+def structure_abstraction(agent: Agent, frames: list[Frame], objective: str) -> None:
     """
-    Instruct the agent to annotate interactable Frames and Elements. 
+    Instruct the agent to annotate interactable Frames and Elements.
     Frames can be further divided into subframes.
     The agent can segment specific Elements or extract a grid of evenly-sized Elements from Frames.
-    
+
     Returns:
         None: all annotations are stored in the Frame instances (e.g., Frame.interactables).
     """
-    def get_script(response: str) -> list[str]:
-        pattern = r"```python(.*?)```"
-        blocks = re.findall(pattern, response, re.DOTALL)
-        code = "\n".join(blocks)
-    
-        result = ""
-        node = ast.parse(code)
-        for elem in node.body:
-            if isinstance(elem, ast.FunctionDef) and elem.name == "structure_abstraction":
-                result = ast.unparse(elem)
-                result = result.replace("structure_abstraction", "process")
-                break
-            
-        return result
-    
-    # Prepare prompt
-    _, images, image_captions, descriptions, relations, _ = get_observation(frames)
-    prompt = Prompts.get(
-        stage=stage,
-        descriptions="\n".join(descriptions),
-        relations="\n".join(relations),
-        objective=objective,
-        tool_docs=indent("\n\n".join([tool.docs for tool in toolkit.tools]), "\t"),
-    )
-    print(prompt)
+    # Prepare prompt + MCP context (Context-as-Resource).
+    # We keep the primary prompt short and allow the model to pull extra context
+    # (descriptions/relations) via read-only MCP resources if needed.
+    _, images, image_captions, _, _, _ = get_observation(frames)
+    base_prompt = Prompts.get(stage=stage, frames=len(frames), objective=objective)
+    prompt = base_prompt
+    policy = MCPPolicy()
+    resources = ResourceStore.build(frames=frames, objective=objective, policy=policy)
+    mcp = InProcessMCPClient(InProcessMCPServer(resources=resources, policy=policy))
+    print(base_prompt)
 
-    # Request script from agent
-    response, _ = agent(prompt, images, image_captions)
-    script = get_script(response)
-    print(script)
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            data = request_json_with_mcp(
+                agent=agent,
+                prompt=prompt,
+                images=images,
+                image_captions=image_captions,
+                mcp=mcp,
+                stage_name="Stage 2",
+            )
+            plan = validate_stage2(data, frames=len(frames))
+            apply_stage2_plan(frames, plan)
+            agent.reset()
+            return
 
-    # Execute response script
-    env = {}
-    exec(script, toolkit.dependencies, env)
-    env["process"](frames)
+        except (ParseError, ValidationError, Exception) as exc:
+            last_error = exc
+            prompt = (
+                base_prompt + "\n\n" + "## Previous error\n" + f"{exc}\n\n"
+                "Please output ONLY valid JSON that matches the required schema.\n"
+                "Do not include markdown fences or any extra text."
+            )
+
     agent.reset()
+    raise last_error if last_error else RuntimeError("Stage 2 failed without a captured error")

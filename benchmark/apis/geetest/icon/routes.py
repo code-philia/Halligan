@@ -1,24 +1,26 @@
-import os
 import json
-from flask import Blueprint, render_template, jsonify, request
+import os
 
+from flask import Blueprint, jsonify, render_template, request
 
-challenges_path = os.path.join(os.path.dirname( __file__ ), "challenges.json")
+challenges_path = os.path.join(os.path.dirname(__file__), "challenges.json")
 challenges_file = open(challenges_path)
 challenges_dict: dict = json.load(challenges_file)
 challenges: list = challenges_dict.get("challenges", [])
-icon = Blueprint('icon', __name__, template_folder="templates", static_folder="static")
+icon = Blueprint("icon", __name__, template_folder="templates", static_folder="static")
 
 
-@icon.route('/<id>', methods=["GET"])
+@icon.route("/<id>", methods=["GET"])
 def test(id: str):
-    return render_template('geetest_icon/index.html', id=id)
+    return render_template("geetest_icon/index.html", id=id)
 
-@icon.route('/challenge.html', methods=["GET"])
+
+@icon.route("/challenge.html", methods=["GET"])
 def challenge():
-    return render_template('geetest_icon/challenge.html')
+    return render_template("geetest_icon/challenge.html")
 
-@icon.route('/challenge/<id>', methods=["GET"])
+
+@icon.route("/challenge/<id>", methods=["GET"])
 def request_challenge(id: str):
     id = int(id)
     if id <= 0 or id > len(challenges):
@@ -26,6 +28,7 @@ def request_challenge(id: str):
 
     challenge = challenges[id - 1]
     return jsonify(challenge)
+
 
 @icon.route("/submit", methods=["POST"])
 def submit_challenge():
@@ -40,7 +43,9 @@ def submit_challenge():
     print(labels)
 
     solved = False
-    if len(state) == len(labels): 
-        solved = all([label[0] <= mark[0] <= label[2] and label[1] <= mark[1] <= label[3] for mark, label in zip(state, labels)])
+    if len(state) == len(labels):
+        solved = all(
+            [label[0] <= mark[0] <= label[2] and label[1] <= mark[1] <= label[3] for mark, label in zip(state, labels)]
+        )
 
     return jsonify(solved=solved, id=id)

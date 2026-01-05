@@ -1,0 +1,33 @@
+# VCS
+.git
+.gitignore
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pytest_cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Logs & outputs
+*.log
+logs/
+results/
+
+# Notebooks & large data
+*.ipynb
+*.zip
+*.tar
+*.tar.gz
+*.pt
+*.pth
+
+# Env files
+.env
+.env.*

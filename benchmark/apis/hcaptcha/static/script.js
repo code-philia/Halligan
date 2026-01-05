@@ -117,8 +117,8 @@ class Captcha {
                 const prompt_image_box = challenge.document.querySelector(".challenge-example");
                 const prompt_image = prompt_image_box.querySelector(".image .image");
                 prompt_image.style["background"] = `url(data:image/png;base64,${instruction_image[0]}) 50% 50% / 120px 120px no-repeat`;
-                prompt_image_box.style["display"] = "block";  
-            } 
+                prompt_image_box.style["display"] = "block";
+            }
 
             // Load submit button
             const submit = challenge.document.querySelector(".button-submit");
@@ -136,7 +136,7 @@ class Captcha {
                 const badge = wrapper.querySelector(".badge");
                 const badge_icon = badge.querySelector(".icon");
                 const badge_radial = badge.querySelector(".badge-radial");
-                
+
                 choice.onclick = () => {
                     var styles = {
                         [true]: [
@@ -193,7 +193,7 @@ class Captcha {
                 prompt_image[i].style["background"] = `url(data:image/png;base64,${image}) 50% 50% / 163.333px 163.333px no-repeat`;
                 prompt_image_box.style["display"] = "block";
                 prompt_image_box.style["height"] = "106px";
-                
+
                 frame.style["height"] = "686px";
                 challenge.document.querySelector("body").style["height"] = "686px";
                 challenge.document.querySelector(".interface-wrapper").style["height"] = "666px";
@@ -240,7 +240,7 @@ class Captcha {
                     let canvas_y = event.clientY - rect.top;
                     let x = (canvas_x - marginX) / width;
                     let y = (canvas_y - marginY) / height;
-  
+
                     if (x > 0 && x < 1 && y > 0 && y < 1) {
                         context.putImageData(background, 0, 0);
                         this.state[0] = x;
@@ -253,7 +253,7 @@ class Captcha {
                         context.strokeStyle = 'black';
                         context.stroke();
                         context.closePath();
-                        
+
                         Object.assign(submit.style, { backgroundColor: "rgb(0, 131, 143)" });
                         submit_text.innerText = "Verify";
                     }
@@ -267,10 +267,10 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state,
-                challenge_type: this.challenge_type 
+                challenge_type: this.challenge_type
             })
         }
         let response = await fetch("./submit", config);

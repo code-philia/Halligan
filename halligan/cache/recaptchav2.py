@@ -1,4 +1,4 @@
-from halligan.utils.action_tools import select, click
+from halligan.utils.action_tools import click, select
 from halligan.utils.vision_tools import ask, mark
 
 
@@ -9,15 +9,15 @@ def stage1(frames):
 def stage2(frames):
     # Frame 0: A blank screen with a 'SKIP' button
     frame_0 = frames[0]
-    skip_button = frame_0.get_element(position='down', details='blue button with text SKIP')
-    skip_button.set_element_as(interactable='NEXT')
+    skip_button = frame_0.get_element(position="down", details="blue button with text SKIP")
+    skip_button.set_element_as(interactable="NEXT")
 
     # Frame 1: A 3x3 grid of images
     frame_1 = frames[1]
     grid_elements = frame_1.grid(tiles=9)
     for row in grid_elements:
         for element in row:
-            element.set_element_as(interactable='SELECTABLE')
+            element.set_element_as(interactable="SELECTABLE")
 
 
 def stage3(frames):

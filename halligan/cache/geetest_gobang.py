@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import match
 from halligan.utils.action_tools import explore
+from halligan.utils.vision_tools import match
 
 
 def stage1(frames):
@@ -29,7 +29,7 @@ def stage3(frames):
     # Iterate over each swap choice
     for choice in choices:
         grid = choice.grid
-        
+
         # Check each row for five identical elements
         for row in grid:
             if all(match(row[0], element) for element in row):
@@ -46,7 +46,7 @@ def stage3(frames):
         if all(match(grid[i][i], grid[0][0]) for i in range(len(grid))):
             choice.swap()
             return
-        if all(match(grid[i][len(grid)-i-1], grid[0][len(grid)-1]) for i in range(len(grid))):
+        if all(match(grid[i][len(grid) - i - 1], grid[0][len(grid) - 1]) for i in range(len(grid))):
             choice.swap()
             return
 

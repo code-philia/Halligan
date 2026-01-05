@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import ask, rank
 from halligan.utils.action_tools import drag
+from halligan.utils.vision_tools import ask, rank
 
 
 def stage1(frames):
@@ -24,7 +24,7 @@ def stage2(frames):
     puzzle_piece_2.set_element_as("DRAGGABLE")
     puzzle_piece_3.set_element_as("DRAGGABLE")
 
-    
+
 def stage3(frames):
     # Step 1: Annotate the missing slot in the fox image with keypoints
     keypoint_image = frames[1].show_keypoints(region="all")

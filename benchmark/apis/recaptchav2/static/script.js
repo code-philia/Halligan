@@ -8,7 +8,7 @@ function init(id) {
             const checkbox_box = checkbox.document.querySelector('.recaptcha-checkbox.goog-inline-block.rc-anchor-checkbox');
             const checkbox_spinner = checkbox.document.querySelector('.recaptcha-checkbox-spinner');
             const checkbox_border = checkbox.document.querySelector('.recaptcha-checkbox-border');
-            
+
             checkbox_box.onclick = async () => {
                 checkbox_box.classList.add('recaptcha-checkbox-loading');
                 checkbox_box.classList.add('recaptcha-checkbox-disabled');
@@ -26,7 +26,7 @@ function init(id) {
                 const subtype = data["subtype"];
                 const instruction = data["instruction"];
                 const images = data["images"];
-                
+
                 new Captcha(id, challenge_node, subtype, instruction, images);
             }
         }
@@ -153,8 +153,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state
             })
         }

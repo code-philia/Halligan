@@ -1,30 +1,51 @@
-```python
-def solve(frames: list) -> None:
-    # Get the slider handle from Frame 2
-    slider_handle = frames[2].get_interactable(0)
-
-    # Slide the handle to the right while observing changes in Frame 1
-    observations = slide_x(slider_handle, direction="right", observe_frame=frames[1])
-
-    # Extract images from observations
-    images = [choice.image for choice in observations]
-
-    # Rank the images based on the task objective: aligning the heart shape
-    ranked_ids = rank(images, task_objective="Align the heart shape")
-
-    # Select the best choice based on the highest rank
-    best_choice = observations[ranked_ids[0]]
-
-    # Refine the search around the best choice
-    refined_choices = best_choice.refine()
-
-    # Further rank the refined choices
-    refined_images = [choice.image for choice in refined_choices]
-    refined_ranked_ids = rank(refined_images, task_objective="Align the heart shape")
-
-    # Select the best refined choice
-    final_choice = refined_choices[refined_ranked_ids[0]]
-
-    # Release the slider at the best position
-    final_choice.release()
+```json
+{
+  "steps": [
+    { "op": "assign", "var": "slider_handle", "value": { "ref": "interactable", "frame": 1, "id": 0 } },
+    {
+      "op": "call",
+      "tool": "slide_x",
+      "args": { "handle": { "var": "slider_handle" }, "direction": "right", "observe_frame": { "ref": "frame", "id": 0 } },
+      "save_as": "observations"
+    },
+    {
+      "op": "call",
+      "tool": "rank",
+      "args": {
+        "images": { "op": "map_attr", "list": { "var": "observations" }, "attr": "image" },
+        "task_objective": "Align the heart shape"
+      },
+      "save_as": "ranked_ids"
+    },
+    {
+      "op": "assign",
+      "var": "best_choice",
+      "value": {
+        "ref": "index",
+        "list": { "var": "observations" },
+        "index": { "ref": "index", "list": { "var": "ranked_ids" }, "index": 0 }
+      }
+    },
+    { "op": "call_method", "target": { "var": "best_choice" }, "method": "refine", "save_as": "refined_choices" },
+    {
+      "op": "call",
+      "tool": "rank",
+      "args": {
+        "images": { "op": "map_attr", "list": { "var": "refined_choices" }, "attr": "image" },
+        "task_objective": "Align the heart shape"
+      },
+      "save_as": "refined_ranked_ids"
+    },
+    {
+      "op": "assign",
+      "var": "final_choice",
+      "value": {
+        "ref": "index",
+        "list": { "var": "refined_choices" },
+        "index": { "ref": "index", "list": { "var": "refined_ranked_ids" }, "index": 0 }
+      }
+    },
+    { "op": "call_method", "target": { "var": "final_choice" }, "method": "release" }
+  ]
+}
 ```

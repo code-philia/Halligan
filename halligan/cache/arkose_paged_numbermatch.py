@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import mark, compare
-from halligan.utils.action_tools import get_all_choices, click
+from halligan.utils.action_tools import click, get_all_choices
+from halligan.utils.vision_tools import compare, mark
 
 
 def stage1(frames):
@@ -9,17 +9,17 @@ def stage1(frames):
 def stage2(frames):
     # Frame 0: Instructions, related to Frame 1
     # Frame 1: Contains arrows for navigation
-    left_arrow = frames[1].get_element(position='left', details='circular arrow')
-    right_arrow = frames[1].get_element(position='right', details='circular arrow')
-    left_arrow.set_element_as(interactable='CLICKABLE')
-    right_arrow.set_element_as(interactable='CLICKABLE')
-    
+    left_arrow = frames[1].get_element(position="left", details="circular arrow")
+    right_arrow = frames[1].get_element(position="right", details="circular arrow")
+    left_arrow.set_element_as(interactable="CLICKABLE")
+    right_arrow.set_element_as(interactable="CLICKABLE")
+
     # Frame 2: Symbols, related to Frame 3
     # No interactables needed here as per the task description
-    
+
     # Frame 3: Submit button
-    submit_button = frames[3].get_element(position='center', details='Submit button')
-    submit_button.set_element_as(interactable='NEXT')
+    submit_button = frames[3].get_element(position="center", details="Submit button")
+    submit_button.set_element_as(interactable="NEXT")
 
 
 def stage3(frames):

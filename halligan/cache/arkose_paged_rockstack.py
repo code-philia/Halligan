@@ -1,5 +1,5 @@
-from halligan.utils.action_tools import get_all_choices, click
-from halligan.utils.vision_tools import mark, ask
+from halligan.utils.action_tools import click, get_all_choices
+from halligan.utils.vision_tools import ask, mark
 
 
 def stage1(frames):
@@ -10,16 +10,16 @@ def stage2(frames):
     # Frame 0 provides instructions, so it's not interactable
     # Frame 1 has arrows to select the group of rocks
     frame1 = frames[1]
-    left_arrow = frame1.get_element('left', 'black circle with left arrow')
-    right_arrow = frame1.get_element('right', 'black circle with right arrow')
-    left_arrow.set_element_as('CLICKABLE')
-    right_arrow.set_element_as('CLICKABLE')
-    
+    left_arrow = frame1.get_element("left", "black circle with left arrow")
+    right_arrow = frame1.get_element("right", "black circle with right arrow")
+    left_arrow.set_element_as("CLICKABLE")
+    right_arrow.set_element_as("CLICKABLE")
+
     # Frame 2 displays the number, it's not interactable
     # Frame 3 has the 'Submit' button
     frame3 = frames[3]
-    submit_button = frame3.get_element('center', 'Submit button')
-    submit_button.set_element_as('NEXT')
+    submit_button = frame3.get_element("center", "Submit button")
+    submit_button.set_element_as("NEXT")
 
 
 def stage3(frames):
@@ -33,7 +33,7 @@ def stage3(frames):
 
     # Initialize variables to track the best choice
     best_choice = None
-    best_difference = float('inf')
+    best_difference = float("inf")
 
     # Iterate through each choice to find the closest match
     for choice in choices:

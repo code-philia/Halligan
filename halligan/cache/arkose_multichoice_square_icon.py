@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import ask, mark
 from halligan.utils.action_tools import select
+from halligan.utils.vision_tools import ask, mark
 
 
 def stage1(frames):
@@ -21,10 +21,10 @@ def stage2(frames):
 def stage3(frames):
     # Mark objects in each frame
     marked_images = mark([frame.image for frame in frames[1:]], "object")
-    
+
     # Ask which frame contains two identical objects
     identical_objects = ask(marked_images, "Does this image contain two identical objects?", answer_type="bool")
-    
+
     # Select the frame with two identical objects
     for i, identical in enumerate(identical_objects):
         if identical:

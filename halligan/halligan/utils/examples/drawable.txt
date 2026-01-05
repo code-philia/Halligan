@@ -1,21 +1,34 @@
-```python
-def solve(frame: list[Frame]) -> None:
-    # First, annotate a part of frame with keypoints
-    # Each keypoint is a number in the image
-    keypoint_image = frames[1].show_keypoints(region="all")
-
-    # Get the start keypoint
-    draw_from_id = ask([keypoint_image], "{describe the start point}", answer_type="int")
-    draw_from = frames[1].get_keypoint(id=draw_from_id[0])
-
-    # Get the end keypoint
-    draw_to_id = ask([keypoint_image], "{describe the end point}", answer_type="int")
-    draw_to = frames[i].get_keypoint(id=draw_to_id[0])
-    
-    # Trace
-    path_ids = trace(keypoint_image, draw_from_id, draw_to_id, "avoid or follow ...")
-    path_keypoints = [frames[1].get_keypoint(id) for id in path_ids]
-
-    # Draw
-    draw(path_keypoints)
+```json
+{
+  "steps": [
+    {
+      "op": "call_method",
+      "target": { "ref": "frame", "id": 0 },
+      "method": "show_keypoints",
+      "args": { "region": "all" },
+      "save_as": "keypoint_image"
+    },
+    {
+      "op": "call",
+      "tool": "ask",
+      "args": { "images": [{ "var": "keypoint_image" }], "question": "describe the start point and give its id", "answer_type": "int" },
+      "save_as": "start_id"
+    },
+    {
+      "op": "call",
+      "tool": "ask",
+      "args": { "images": [{ "var": "keypoint_image" }], "question": "describe the end point and give its id", "answer_type": "int" },
+      "save_as": "end_id"
+    },
+    {
+      "op": "assign",
+      "var": "path",
+      "value": [
+        { "ref": "keypoint", "frame": 0, "id": { "ref": "index", "list": { "var": "start_id" }, "index": 0 } },
+        { "ref": "keypoint", "frame": 0, "id": { "ref": "index", "list": { "var": "end_id" }, "index": 0 } }
+      ]
+    },
+    { "op": "call", "tool": "draw", "args": { "path": { "var": "path" } } }
+  ]
+}
 ```

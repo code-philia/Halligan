@@ -1,103 +1,75 @@
-import re
-import ast
-from textwrap import indent
-
 import halligan.prompts as Prompts
-import halligan.utils.examples as Examples
 from halligan.agents import Agent
-from halligan.utils.logger import Trace
+from halligan.mcp.client import InProcessMCPClient
+from halligan.mcp.policy import MCPPolicy
+from halligan.mcp.resources import ResourceStore
+from halligan.mcp.server import InProcessMCPServer
+from halligan.mcp.session import request_json_with_mcp
+from halligan.runtime.errors import ParseError, ToolError, ValidationError
+from halligan.runtime.executor import execute_stage3_program
+from halligan.runtime.registry import build_default_registry
+from halligan.runtime.schemas import validate_stage3
+from halligan.utils import vision_tools
 from halligan.utils.constants import Stage
-from halligan.utils.constants import InteractableElement
-from halligan.utils.action_tools import action_toolkits
-from halligan.utils.vision_tools import vision_toolkits
 from halligan.utils.layout import Frame, get_observation
-
+from halligan.utils.logger import Trace
 
 stage = Stage.SOLUTION_COMPOSITION
 
 
 @Trace.section("Solution Composition")
-def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> None: 
+def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> None:
     """
     Agent composes a Python executable solution using vision and action tools.
     """
-    def get_script(response: str) -> list[str]:
-        pattern = r"```python(.*?)```"
-        blocks = re.findall(pattern, response, re.DOTALL)
-        code = "\n".join(blocks)
-    
-        result = ""
-        node = ast.parse(code)
-        for elem in node.body:
-            if isinstance(elem, ast.FunctionDef) and elem.name == "solve":
-                result = ast.unparse(elem)
-                break
-            
-        return result
-    
-    def execute_script(script: str, dependencies: dict):
-        if "==" in script:
-            raise ValueError("Exact match (==) is illegal, you must find the closest, best possible answer.")
-        
-        if "get_keypoint" in script and "get_neighbour" not in script:
-            raise ValueError("You must narrow down the keypoint search space with get_neighbour()")
-        
-        env = {}
-        exec(script, dependencies, env)
-        env["solve"](all_frames)
-    
-    examples = []
-    dependencies = {}
-    action_tool_docs, vision_tool_docs = {}, {}
-    all_frames, images, image_captions, descriptions, relations, interactable_types = get_observation(frames)
-    
-    for interactable_type in interactable_types:
-        # Prepare action and vision tools based on interactables
-        for (toolkits, docs) in [(action_toolkits, action_tool_docs), (vision_toolkits, vision_tool_docs)]:
-            toolkit = toolkits.get(interactable_type)
-            if toolkit:
-                docs.update({
-                    f"{tool.owner}.{tool.name}" if tool.owner else tool.name: tool.docs 
-                    for tool in toolkit.tools
-                })
-                dependencies.update(toolkit.dependencies)
+    all_frames, images, image_captions, _, _, interactable_types = get_observation(frames)
 
-        # Prepare in-context learning examples
-        if interactable_type == InteractableElement.NEXT.name: continue
-        else: examples.append(Examples.get(interactable_type))
+    # Tools exposed to the JSON program (functions only).
+    # NOTE: Stage 3 program execution may pass non-JSON Python objects (Frame/Element/Point);
+    # therefore we keep tool invocation in-process and enforce policy at a single choke point.
+    registry = build_default_registry()
+    policy = MCPPolicy(allowed_tools=set(registry.names()))
+    resources = ResourceStore.build(frames=frames, objective=objective, registry=registry, policy=policy)
+    mcp = InProcessMCPClient(InProcessMCPServer(registry=registry, resources=resources, policy=policy))
 
-    # Prepare prompt
-    prompt = Prompts.get(
-        stage=stage,
-        descriptions="\n".join(descriptions),
-        relations="\n".join(relations),
-        objective=objective,
-        examples="\n\n".join(examples),
-        action_tools=indent("\n\n".join(action_tool_docs.values()), "\t"),
-        vision_tools=indent("\n\n".join(vision_tool_docs.values()), "\t")
-    )
-    print(prompt)
+    # Prepare prompt (short, resource-first).
+    interactable_str = ", ".join(sorted(t for t in interactable_types))
+    base_prompt = Prompts.get(stage=stage, objective=objective, frames=len(frames), interactable_types=interactable_str)
+    prompt = base_prompt
+    print(base_prompt)
 
-    # Request script from agent 
-    try:
-        response, _ = agent(prompt, images, image_captions)
-        script = get_script(response)
-        print(script)
-        execute_script(script, dependencies)
+    # Request JSON program from agent and execute it safely
+    feedback: Exception | None = None
+    for _ in range(4):
+        try:
+            data = request_json_with_mcp(
+                agent=agent,
+                prompt=prompt,
+                images=images,
+                image_captions=image_captions,
+                mcp=mcp,
+                stage_name="Stage 3",
+                allowed_methods=("resources/read", "resources/list", "tools/list"),
+            )
+            program = validate_stage3(data)
 
-    except Exception as e:
-        feedback = e
+            # Vision tools require an injected agent instance.
+            agent.reset()
+            vision_tools.set_agent(agent)
+            execute_stage3_program(all_frames, program, registry=registry, invoker=mcp)
+            agent.reset()
+            return
 
-        for _ in range(3):
-            try:
-                print(feedback)
-                response, _ = agent(f"Your code has errors, please fix it.\n{feedback}")
-                script = get_script(response)
-                print(script)
-                execute_script(script, dependencies)
-                break
-
-            except Exception as e:
-                feedback = e
+        except (ParseError, ValidationError, ToolError, Exception) as exc:
+            feedback = exc
+            prompt = (
+                base_prompt
+                + "\n\n"
+                + "## Previous error\n"
+                + f"{exc}\n\n"
+                + "Please output ONLY valid JSON that matches the required schema.\n"
+                + "Do not include markdown fences or any extra text."
+            )
 
     agent.reset()
+    raise feedback if feedback else RuntimeError("Stage 3 failed without a captured error")

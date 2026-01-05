@@ -8,7 +8,7 @@ function init(id) {
             const checkbox = container.document.querySelector(".checkbox");
             const challenge = container.document.querySelector(".challenge");
             const start_button = container.document.querySelector(".start-button");
-        
+
             let response = await fetch(`./${id}/challenge`);
             let data = await response.json();
             if (!response.ok) {
@@ -40,7 +40,7 @@ class Captcha {
      */
     constructor(id, challenge, instruction, images) {
         this.id = id;
-        
+
         // Initialize instruction text
         const instruction_element = challenge.querySelector(".challenge-instruction");
         const regex = /\*([^*]+)\*/g;
@@ -61,8 +61,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: choice
             })
         }

@@ -1,21 +1,21 @@
 # Action handles for all interactable frames and elements.
 # Provides VLM agents with the ability to interact and execute actions (i.e., enhance executive function).
 from __future__ import annotations
+
 import io
-import time
 import itertools
+import time
 from copy import deepcopy
-from typing import Union, Literal, List
+from typing import List, Literal, Union
 
 import PIL.Image
-from PIL import ImageChops
 from dotenv import load_dotenv
+from PIL import ImageChops
 from playwright.sync_api import Page
 
+from halligan.utils.layout import Element, Frame, Point
 from halligan.utils.toolkit import Toolkit
-from halligan.utils.layout import Frame, Element, Point
 from halligan.utils.vision_tools import match
-
 
 load_dotenv()
 
@@ -29,10 +29,7 @@ def set_page(p: Page):
 
 def screenshot(region: list[float] = None) -> PIL.Image.Image:
     if region:
-        region = {
-            "x": region[0], "y": region[1],
-            "width": region[2], "height": region[3]
-        }
+        region = {"x": region[0], "y": region[1], "width": region[2], "height": region[3]}
     image_bytes = page.screenshot(clip=region)
     return PIL.Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
@@ -44,10 +41,10 @@ class Choice:
     @property
     def image(self) -> PIL.Image.Image:
         return self._image
-    
+
     def release(self) -> None:
         """
-        (For click_and_hold) Release from holding. 
+        (For click_and_hold) Release from holding.
         """
         page.mouse.up()
 
@@ -74,13 +71,13 @@ class SelectChoice:
 
 class SlideChoice:
     def __init__(
-        self, 
+        self,
         axis: Literal["x", "y"],
-        image: PIL.Image.Image, 
+        image: PIL.Image.Image,
         current_x: int,
-        current_y: int, 
+        current_y: int,
         observe: Frame,
-        track_bounds: tuple[int, int]
+        track_bounds: tuple[int, int],
     ) -> None:
         self._axis = axis
         self._image = image
@@ -88,7 +85,7 @@ class SlideChoice:
         self._current_y = current_y
         self._observe = observe
         self._track_bounds = track_bounds
-        
+
     @property
     def image(self) -> PIL.Image.Image:
         """
@@ -116,40 +113,36 @@ class SlideChoice:
             else:
                 page.mouse.move(x=self._current_x, y=pos)
                 image = screenshot(self._observe.region)
-                choice = SlideChoice(self._axis, image, self._current_x, pos, self._observe, (min_bound, max_bound))            
+                choice = SlideChoice(self._axis, image, self._current_x, pos, self._observe, (min_bound, max_bound))
 
             choices.append(choice)
-        
+
         return choices
-    
+
     def release(self) -> None:
         """
         Confirm this as the final choice and release slider.
         """
         page.mouse.move(self._current_x, self._current_y)
         page.mouse.up()
-    
+
 
 class SwapChoice:
     def __init__(
-        self, 
-        grid: list[list[Element]], 
-        image: PIL.Image.Image,
-        start: tuple[int, int],
-        end: tuple[int, int]
+        self, grid: list[list[Element]], image: PIL.Image.Image, start: tuple[int, int], end: tuple[int, int]
     ) -> None:
         self._grid = grid
         self._image = image
         self._start = start
         self._end = end
-        
+
     @property
     def preview(self) -> PIL.Image.Image:
         """
         A preview image of the grid after swap.
         """
         return self._image
-    
+
     @property
     def grid(self) -> list[list[Element]]:
         """
@@ -158,7 +151,7 @@ class SwapChoice:
         For example: compare() identical elements in a row or column.
         """
         return self._grid
-        
+
     def swap(self) -> None:
         """
         Executes the swap previewed in this choice.
@@ -166,7 +159,7 @@ class SwapChoice:
         x1, y1 = self._start
         x2, y2 = self._end
 
-        # Attempt 1: click start and end 
+        # Attempt 1: click start and end
         page.mouse.click(x1, y1)
         page.mouse.click(x2, y2)
 
@@ -182,14 +175,14 @@ class DragChoice:
         self._image = image
         self._start = start
         self._end = end
-    
+
     @property
     def preview(self) -> PIL.Image.Image:
         """
         A preview of the drag-and-drop results.
         """
         return self._image
-    
+
     def drop(self) -> None:
         """
         Confirm this as the final choice and drop here.
@@ -200,7 +193,7 @@ class DragChoice:
         page.mouse.down()
         page.mouse.move(x2, y2)
         page.mouse.up()
-        
+
 
 def click(target: Union[Frame, Element]) -> None:
     """
@@ -228,7 +221,8 @@ def click_and_hold(target: Union[Frame, Element], observe: Frame):
 
     while True:
         elapsed_time = time.time() - start_time
-        if elapsed_time > timeout: break
+        if elapsed_time > timeout:
+            break
 
         image = screenshot(region)
         yield Choice(image)
@@ -239,8 +233,10 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame) ->
     Cycle through all choices by clicking arrow buttons.
     Returns all cycled choices from frame.
     """
+
     def same_as(diff: PIL.Image.Image) -> bool:
-        if not diff_with_first.getbbox(): return True
+        if not diff_with_first.getbbox():
+            return True
         diff = diff.convert("L")
         total_diff = sum(diff.getdata())
         max_diff = diff.size[0] * diff.size[1] * 255
@@ -260,11 +256,12 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame) ->
         diff_with_prev = ImageChops.difference(image, choices[-1].image)
 
         # Same as first means we have gone through a full cycle.
-        if same_as(diff_with_first): break
+        if same_as(diff_with_first):
+            break
 
         # Same as prev means it has reached the end but can't cycle back, manually do so.
         if same_as(diff_with_prev):
-            for _ in range(len(choices) - 1): 
+            for _ in range(len(choices) - 1):
                 page.mouse.click(prev_x, prev_y)
             break
 
@@ -283,12 +280,13 @@ def drag(start: Element, end: Point) -> list[DragChoice]:
     """
     import cv2
     import numpy as np
+
     def get_mask(image: PIL.Image.Image) -> np.ndarray:
         image = np.array(image)
         gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         _, mask = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY_INV)
-        #mask = cv2.bitwise_not(mask) 
-        mask = PIL.Image.fromarray(mask).convert('L')
+        # mask = cv2.bitwise_not(mask)
+        mask = PIL.Image.fromarray(mask).convert("L")
         return mask
 
     x2, y2 = end.center
@@ -304,7 +302,7 @@ def drag(start: Element, end: Point) -> list[DragChoice]:
                 cx - start.w // 2 - margin,
                 cy - start.h // 2 - margin,
                 start.w + margin * 2,
-                start.h + margin * 2
+                start.h + margin * 2,
             ]
             mask = get_mask(start.image)
             image = screenshot(region)
@@ -318,13 +316,14 @@ def draw(path: list[Point]) -> None:
     """
     Draw a path following a list of points.
     """
-    if not path: return
+    if not path:
+        return
 
     x, y = path[0]
     page.mouse.move(x, y)
     page.mouse.down()
 
-    for point in path: 
+    for point in path:
         page.mouse.move(point.x, point.y)
 
     x, y = path[-1]
@@ -357,7 +356,7 @@ def select(choice: Union[Frame, Element]) -> None:
     page.mouse.click(x, y)
 
 
-def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame: Frame) -> list[SlideChoice]:
+def slide_x(handle: Element, direction: Literal["left", "right"], observe_frame: Frame) -> list[SlideChoice]:
     """
     Drag and move slider handle left/right while observing changes in a frame.
 
@@ -365,7 +364,7 @@ def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame:
         observation (list[Choice]): observation over frame while sliding.
     """
     track_bounds = (handle.parent.x, handle.parent.x + handle.parent.w)
-    step_size = handle.w // 2   
+    step_size = handle.w // 2
     step = -step_size if direction == "left" else step_size
 
     choices = []
@@ -385,7 +384,7 @@ def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame:
     return choices
 
 
-def slide_y(handle: Element, direction: Literal['up', 'down'], observe_frame: Frame) -> list[SlideChoice]:
+def slide_y(handle: Element, direction: Literal["up", "down"], observe_frame: Frame) -> list[SlideChoice]:
     """
     Drag and move slider handle up/down while observing changes in a frame.
 
@@ -393,7 +392,7 @@ def slide_y(handle: Element, direction: Literal['up', 'down'], observe_frame: Fr
         observation (list[Choice]): observation over frame while sliding.
     """
     track_bounds = (handle.parent.y, handle.parent.y + handle.parent.h)
-    step_size = handle.h // 2   
+    step_size = handle.h // 2
     step = -step_size if direction.lower() == "down" else step_size
 
     choices = []
@@ -439,7 +438,8 @@ def explore(grid: Frame) -> list[SwapChoice]:
     all_cells = list(itertools.product(range(rows), range(cols)))
 
     for (r1, c1), (r2, c2) in itertools.combinations(all_cells, 2):
-        if match(element_grid[r1][c1], element_grid[r2][c2]): continue
+        if match(element_grid[r1][c1], element_grid[r2][c2]):
+            continue
 
         manhattan_distance = abs(r1 - r2) + abs(c1 - c2)
         swapped_grid = deepcopy(element_grid)
@@ -451,12 +451,18 @@ def explore(grid: Frame) -> list[SwapChoice]:
 
         # Swap elements
         swapped_grid[r1][c1].image, swapped_grid[r2][c2].image = swapped_grid[r2][c2].image, swapped_grid[r1][c1].image
-        swap_from = (swapped_grid[r1][c1].x + swapped_grid[r1][c1].w // 2, swapped_grid[r1][c1].y + swapped_grid[r1][c1].h // 2)
-        swap_to = (swapped_grid[r2][c2].x + swapped_grid[r2][c2].w // 2, swapped_grid[r2][c2].y + swapped_grid[r2][c2].h // 2)
+        swap_from = (
+            swapped_grid[r1][c1].x + swapped_grid[r1][c1].w // 2,
+            swapped_grid[r1][c1].y + swapped_grid[r1][c1].h // 2,
+        )
+        swap_to = (
+            swapped_grid[r2][c2].x + swapped_grid[r2][c2].w // 2,
+            swapped_grid[r2][c2].y + swapped_grid[r2][c2].h // 2,
+        )
 
         choice = SwapChoice(swapped_grid, image, swap_from, swap_to)
         choices_by_distance[manhattan_distance].append(choice)
-        
+
     return [choice for choices in choices_by_distance.values() for choice in choices]
 
 
@@ -472,7 +478,7 @@ action_toolkits: dict[str, Toolkit] = {
     "DRAWABLE": [draw],
     "INPUTTABLE": [enter],
     "SELECTABLE": [select],
-    "NEXT": [click]
+    "NEXT": [click],
 }
 
 for action, tools in action_toolkits.items():

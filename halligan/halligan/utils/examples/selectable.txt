@@ -1,24 +1,25 @@
-```python
-def solve(frames: list) -> None:
-    # For counting things, use mark
-    # You must mention the marking (red boxes) in your ask() question
-    marked_images = mark([choice.image for choice in choices], "animal")
-    animals = ask([marked_images], "What is the number of animals in the marked red boxes?", answer_type="int")
-
-    # Note: You are free to use the tools multiple times.
-    count = ask([marked_images], "What is the number in the image?", answer_type="int")
-
-    # Identifying details of things in choices
-    for choice in choices:
-        traffic_light_images = focus(choice.image, "traffic light")
-        light_colors = ask(traffic_light_images, "Is this green signal?", answer_type="bool")
-
-    # Comparing choices
-    compare(images, "Which object is facing the same direction as in reference image?", reference_image)
-
-    # Ranking choices
-    rank(landscapes, "Amount of greenery")
-
-    # If 'NEXT' is present, click to submit
-    # Note: Exact match (==) is illegal because there are error and variance in the tools.
+```json
+{
+  "steps": [
+    {
+      "op": "call",
+      "tool": "rank",
+      "args": {
+        "images": { "op": "map_attr", "list": { "var": "choices" }, "attr": "image" },
+        "task_objective": "Pick the best matching option"
+      },
+      "save_as": "ranked_ids"
+    },
+    {
+      "op": "assign",
+      "var": "best_choice",
+      "value": {
+        "ref": "index",
+        "list": { "var": "choices" },
+        "index": { "ref": "index", "list": { "var": "ranked_ids" }, "index": 0 }
+      }
+    },
+    { "op": "call", "tool": "select", "args": { "choice": { "var": "best_choice" } } }
+  ]
+}
 ```

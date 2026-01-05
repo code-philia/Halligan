@@ -17,7 +17,7 @@ function init(id) {
 class Captcha {
     /**
      * @param {string} id
-     * @param {string} image 
+     * @param {string} image
      * @param {number[][]} swaps
      */
     constructor(id, image, swaps) {
@@ -98,7 +98,7 @@ class Captcha {
         var distance = current_x - this.start_x
         if (distance < 0 || distance > this.max_distance) distance = Math.min(Math.max(distance, 0), this.max_distance);
         this.index = Math.floor(distance / this.interval)
-        distance = this.index * this.interval; 
+        distance = this.index * this.interval;
         this.set_swap_state(this.index);
         this.slider.style["left"] = `${distance}px`;
         this.slide.style["left"] = `${distance}px`;
@@ -115,8 +115,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.index
             })
         }

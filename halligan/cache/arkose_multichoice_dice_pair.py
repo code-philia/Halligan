@@ -1,5 +1,5 @@
 from halligan.utils.action_tools import select
-from halligan.utils.vision_tools import mark, ask
+from halligan.utils.vision_tools import ask, mark
 
 
 def stage1(frames):
@@ -15,7 +15,7 @@ def stage2(frames):
 
     # Set each subframe as SELECTABLE since we need to click on the correct pair
     for subframe in subframes:
-        subframe.set_frame_as('SELECTABLE')
+        subframe.set_frame_as("SELECTABLE")
 
 
 def stage3(frames):

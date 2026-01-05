@@ -14,7 +14,7 @@ def _get_template(prompt_name: str) -> Template:
 _TEMPLATES: dict[Stage, Template] = {
     Stage.OBJECTIVE_IDENTIFICATION: _get_template("objective_identification.prompt"),
     Stage.STRUCTURE_ABSTRACTION: _get_template("structure_abstraction.prompt"),
-    Stage.SOLUTION_COMPOSITION: _get_template("solution_composition.prompt")
+    Stage.SOLUTION_COMPOSITION: _get_template("solution_composition.prompt"),
 }
 
 

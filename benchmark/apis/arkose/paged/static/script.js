@@ -53,7 +53,7 @@ class Captcha {
         instruction = instruction.replace(regex, '<strong>$1</strong>');
         const instruction_html = `<span role='text'>${instruction} (1 of 1)</span>`;
         instruction_element.innerHTML = instruction_html;
-        
+
         // Initialize instruction image
         const key_frame_img = challenge.querySelector(".key-frame-image");
         key_frame_img.src = `data:image/png;base64,${instruction_images[0]}`;
@@ -95,8 +95,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state
             })
         }

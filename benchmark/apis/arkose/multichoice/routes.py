@@ -1,32 +1,33 @@
-import os
-import json
 import glob
+import json
+import os
 
-from flask import Blueprint, render_template, jsonify, request
-
+from flask import Blueprint, jsonify, render_template, request
 
 challenge_paths: list[str] = glob.glob(os.path.join(os.path.dirname(__file__), "*.json"))
 challenge_dicts: list[dict] = [json.load(open(path)) for path in challenge_paths]
 challenge_variants: list[str] = [path.split("/")[-1].replace(".json", "") for path in challenge_paths]
-challenges: dict = {variant: challenges.get("challenges", []) for variant, challenges in zip(challenge_variants, challenge_dicts)}
-multichoice = Blueprint('multichoice', __name__, template_folder="templates", static_folder="static")
+challenges: dict = {
+    variant: challenges.get("challenges", []) for variant, challenges in zip(challenge_variants, challenge_dicts)
+}
+multichoice = Blueprint("multichoice", __name__, template_folder="templates", static_folder="static")
 
 
-@multichoice.route('/<variant>/<id>', methods=["GET"])
+@multichoice.route("/<variant>/<id>", methods=["GET"])
 def init(variant: str, id: str):
-    return render_template('arkose_multichoice/index.html', variant=variant, id=id)
+    return render_template("arkose_multichoice/index.html", variant=variant, id=id)
 
 
-@multichoice.route('/challenge.html', methods=["GET"])
+@multichoice.route("/challenge.html", methods=["GET"])
 def challenge():
-    return render_template('arkose_multichoice/challenge.html')
+    return render_template("arkose_multichoice/challenge.html")
 
 
-@multichoice.route('/<variant>/<id>/challenge', methods=["GET"])
+@multichoice.route("/<variant>/<id>/challenge", methods=["GET"])
 def request_challenge(variant: str, id: str):
     if variant not in challenges:
-        return jsonify(message=f"Challenge variant not found"), 404
-    
+        return jsonify(message="Challenge variant not found"), 404
+
     id = int(id)
     variant_challenges = challenges.get(variant, [])
     if not (0 < id <= len(variant_challenges)):
