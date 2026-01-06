@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import mark, compare, ask
-from halligan.utils.action_tools import get_all_choices, click
+from halligan.utils.action_tools import click, get_all_choices
+from halligan.utils.vision_tools import ask, compare, mark
 
 
 def stage1(frames):
@@ -29,16 +29,16 @@ def stage2(frames):
 
     return {
         "Frame 0": {"interactable": "POINTABLE"},
-        "Frame 1": {"elements": [
-            {"position": "left", "interactable": "CLICKABLE"},
-            {"position": "right", "interactable": "CLICKABLE"}
-        ]},
+        "Frame 1": {
+            "elements": [
+                {"position": "left", "interactable": "CLICKABLE"},
+                {"position": "right", "interactable": "CLICKABLE"},
+            ]
+        },
         "Frame 2": {"interactable": None},  # Dependent frame, not interactable.
-        "Frame 3": {"elements": [
-            {"position": "down", "interactable": "NEXT"}
-        ]}
+        "Frame 3": {"elements": [{"position": "down", "interactable": "NEXT"}]},
     }
-    
+
 
 def stage3(frames):
     # Extract the target number and icon from Frame 2
@@ -52,7 +52,11 @@ def stage3(frames):
     choices = get_all_choices(left_arrow, right_arrow, frames[1])
 
     # Compare each choice with the target criteria
-    comparison = compare([choice.image for choice in choices], f"Which image has the icon '{target_icon}' in orbit '{target_orbit}'?", target_image)
+    comparison = compare(
+        [choice.image for choice in choices],
+        f"Which image has the icon '{target_icon}' in orbit '{target_orbit}'?",
+        target_image,
+    )
 
     # Select the correct choice
     for choice, is_correct in zip(choices, comparison):

@@ -1,7 +1,6 @@
 import json
 
-
-rockstack = json.load(open("./rotated.json")) 
+rockstack = json.load(open("./rotated.json"))
 challenges = rockstack["challenges"]
 
 prev_label = 0

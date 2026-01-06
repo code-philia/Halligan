@@ -1,5 +1,5 @@
+from halligan.utils.action_tools import click, get_all_choices
 from halligan.utils.vision_tools import ask, focus
-from halligan.utils.action_tools import get_all_choices, click
 
 
 def stage1(frames):
@@ -39,7 +39,7 @@ def stage3(frames):
 
     # Initialize variables to track the best choice
     best_choice = None
-    best_difference = float('inf')
+    best_difference = float("inf")
 
     # Iterate through each choice to find the closest sum to the target number
     for choice in choices:

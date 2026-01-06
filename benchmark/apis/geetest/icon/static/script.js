@@ -5,7 +5,7 @@ function init(id) {
         challenge_frame.onload = async () => {
             const container = challenge_frame.contentWindow;
             const challenge = container.document.querySelector(".geetest_box");
-        
+
             let response = await fetch(`./challenge/${id}`);
             let data = await response.json();
             if (!response.ok) {
@@ -40,7 +40,7 @@ class Captcha {
         this.marks = []
         this.background = container.document.querySelector(".geetest_bg");
         this.window = container.document.querySelector(".geetest_window");
-        
+
         const submit_button = container.document.querySelector(".geetest_submit");
         submit_button.onclick = () => this.submit();
 
@@ -73,8 +73,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state
             })
         }

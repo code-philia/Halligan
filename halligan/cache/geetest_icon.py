@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import ask
 from halligan.utils.action_tools import click
+from halligan.utils.vision_tools import ask
 
 
 def stage3(frames):
@@ -9,18 +9,14 @@ def stage3(frames):
 
     # Frame 1 contains the clickable icons
     icons = [
-        frames[1].get_interactable(0), 
+        frames[1].get_interactable(0),
         frames[1].get_interactable(1),
         frames[1].get_interactable(2),
     ]
 
     prompt = f"Assign each icon with the best description:\n{"\n".join([f"({i}) {desc}" for i, desc in enumerate(order)])}\n Each icon must have a unique number, all numbers must be used.\n"
 
-    click_order = ask(
-        [icon.image for icon in icons], 
-        prompt, 
-        answer_type="int"
-    )
+    click_order = ask([icon.image for icon in icons], prompt, answer_type="int")
 
     # Click the icons in the specified order
     for i in click_order:

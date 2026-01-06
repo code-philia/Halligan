@@ -1,24 +1,25 @@
-```python
-def solve(frames: list[Frame]) -> None:
-    # Get all choices using the interactables
-    # Gather information about each choice
-
-    scores = []
-    for choice in choices:
-        # Get subtasks or annotate tasks for better reasoning
-        zoom() / focus()
-
-        # Reason about subtasks
-        ask() / rank()
-    
-        # Score that combines tools + results from ask()
-        match()
-
-        scores.append(score)
-
-    for choice, score in zip(choices, scores):
-        # From scores, find the closest possible answers using metrics like rank, difference, similarity, or distance
-        # Exact match (==) is illegal.
-
-    # Select answers by acting on interactables
+```json
+{
+  "steps": [
+    {
+      "op": "call",
+      "tool": "rank",
+      "args": {
+        "images": { "op": "map_attr", "list": { "var": "choices" }, "attr": "image" },
+        "task_objective": "Pick the option that best matches the objective"
+      },
+      "save_as": "ranked_ids"
+    },
+    {
+      "op": "assign",
+      "var": "best_choice",
+      "value": {
+        "ref": "index",
+        "list": { "var": "choices" },
+        "index": { "ref": "index", "list": { "var": "ranked_ids" }, "index": 0 }
+      }
+    },
+    { "op": "call_method", "target": { "var": "best_choice" }, "method": "select" }
+  ]
+}
 ```

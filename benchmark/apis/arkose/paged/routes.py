@@ -1,33 +1,34 @@
-import os
-import json
 import glob
+import json
+import os
 
-from flask import Blueprint, render_template, jsonify, request
-
+from flask import Blueprint, jsonify, render_template, request
 
 challenge_paths: list[str] = glob.glob(os.path.join(os.path.dirname(__file__), "*.json"))
 challenge_dicts: list[dict] = [json.load(open(path)) for path in challenge_paths]
 challenge_variants: list[str] = [path.split("/")[-1].replace(".json", "") for path in challenge_paths]
-challenges: dict = {variant: challenges.get("challenges", []) for variant, challenges in zip(challenge_variants, challenge_dicts)}
-paged = Blueprint('paged', __name__, template_folder="templates", static_folder="static")
+challenges: dict = {
+    variant: challenges.get("challenges", []) for variant, challenges in zip(challenge_variants, challenge_dicts)
+}
+paged = Blueprint("paged", __name__, template_folder="templates", static_folder="static")
 
 
-@paged.route('/<variant>/<id>', methods=["GET"])
+@paged.route("/<variant>/<id>", methods=["GET"])
 def init(variant: str, id: str):
-    return render_template('arkose_paged/index.html', variant=variant, id=id)
+    return render_template("arkose_paged/index.html", variant=variant, id=id)
 
 
-@paged.route('/challenge.html', methods=["GET"])
+@paged.route("/challenge.html", methods=["GET"])
 def challenge():
-    return render_template('arkose_paged/challenge.html')
+    return render_template("arkose_paged/challenge.html")
 
 
-@paged.route('/<variant>/<id>/challenge', methods=["GET"])
+@paged.route("/<variant>/<id>/challenge", methods=["GET"])
 def request_challenge(variant: str, id: str):
     print(request.path, request.url)
     if variant not in challenges:
-        return jsonify(message=f"Challenge variant not found"), 404
-    
+        return jsonify(message="Challenge variant not found"), 404
+
     id = int(id)
     variant_challenges = challenges.get(variant, [])
     if not (0 < id <= len(variant_challenges)):

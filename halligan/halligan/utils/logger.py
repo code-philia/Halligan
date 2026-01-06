@@ -1,14 +1,13 @@
-import io
-import os
-import sys
 import base64
 import hashlib
+import io
+import os
 import platform
-from pathlib import Path
-from timeit import default_timer as timer
+import sys
 from datetime import datetime, timezone
-
 from importlib.metadata import distributions
+from timeit import default_timer as timer
+
 import nbformat as nbf
 import PIL.Image
 
@@ -20,10 +19,10 @@ def get_python_version() -> str:
 
 
 def get_python_env_hash() -> str:
-    installed_packages = {dist.metadata['Name'].lower(): dist.version for dist in distributions()}
+    installed_packages = {dist.metadata["Name"].lower(): dist.version for dist in distributions()}
     package_list = sorted(f"{pkg}=={version}" for pkg, version in installed_packages.items())
     packages_str = "\n".join(package_list)
-    hash_object = hashlib.sha256(packages_str.encode('utf-8'))
+    hash_object = hashlib.sha256(packages_str.encode("utf-8"))
     return hash_object.hexdigest()
 
 
@@ -34,21 +33,21 @@ def get_image_tag(image: PIL.Image.Image) -> str:
     return f'<img src="data:image/png;base64,{image_b64}"/>'
 
 
-def get_image_grid(images: list[PIL.Image.Image], image_captions: list[str], columns = 5) -> str:
+def get_image_grid(images: list[PIL.Image.Image], image_captions: list[str], columns=5) -> str:
     image_htmls = []
     for image, caption in zip(images, image_captions):
-        image_html = f'<div>{get_image_tag(image)}<p>{caption}</p></div>'
+        image_html = f"<div>{get_image_tag(image)}<p>{caption}</p></div>"
         image_htmls.append(image_html)
 
-    return f'''
+    return f"""
     <div style="
-        display: grid; 
+        display: grid;
         grid-template-columns: repeat({columns}, auto);
         column-gap: 10px;
         row-gap: 10px;">
         {"".join(image_htmls)}
     </div>
-    '''
+    """
 
 
 PYTHON_VERSION = get_python_version()
@@ -73,9 +72,7 @@ class Trace:
             f"{get_image_tag(captcha)}"
         )
         cls.cells: list = cls.notebook.get("cells", [])
-        cls.cells.append(
-            nbf.v4.new_markdown_cell(header)
-        )
+        cls.cells.append(nbf.v4.new_markdown_cell(header))
         cls.tracing = True
         cls.path = path
 
@@ -92,23 +89,28 @@ class Trace:
                 execution_time = end_time - start_time
 
                 prompt_cell = nbf.v4.new_code_cell(source=f"PROMPT = '''\n{prompt}\n'''")
-                images_cell = nbf.v4.new_code_cell(source=f"IMAGES = {len(images)}", outputs=[
-                    nbf.v4.new_output(
-                        output_type="display_data", 
-                        data={"text/html": get_image_grid(images, image_captions)}, 
-                        metadata={}
-                    )
-                ])
+                images_cell = nbf.v4.new_code_cell(
+                    source=f"IMAGES = {len(images)}",
+                    outputs=[
+                        nbf.v4.new_output(
+                            output_type="display_data",
+                            data={"text/html": get_image_grid(images, image_captions)},
+                            metadata={},
+                        )
+                    ],
+                )
 
                 metadata = "\n".join(f"{key.upper()} = {value}" for key, value in metadata.items())
                 response = f"RESPONSE = '''\n{response}\n'''\nTIME = {execution_time}\n" + metadata
                 response_cell = nbf.v4.new_code_cell(source=response)
-                divider_cell = nbf.v4.new_markdown_cell(f"---")
+                divider_cell = nbf.v4.new_markdown_cell("---")
                 cls.cells.extend([prompt_cell, images_cell, response_cell, divider_cell])
 
                 return response, metadata
+
             return wrapper
-        return decorator   
+
+        return decorator
 
     @classmethod
     def section(cls, title: str):
@@ -129,9 +131,11 @@ class Trace:
                 cls.cells.append(cell)
 
                 return result
+
             return wrapper
+
         return decorator
-    
+
     @classmethod
     def comment(cls, markdown: str):
         cell = nbf.v4.new_markdown_cell(markdown)

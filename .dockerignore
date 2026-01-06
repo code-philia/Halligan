@@ -1,0 +1,44 @@
+# VCS
+.git
+.gitignore
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pytest_cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Logs & outputs
+*.log
+logs/
+results/
+
+# Models and caches
+halligan/.cache/
+halligan/models/
+
+# Notebooks & large data
+*.ipynb
+*.zip
+*.tar
+*.tar.gz
+*.pt
+*.pth
+
+# Pixi artifacts
+halligan/pixi.lock
+halligan/.pixi/
+
+# Node/Yarn
+node_modules/
+
+# Env files
+.env
+.env.*

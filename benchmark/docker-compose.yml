@@ -4,9 +4,9 @@ services:
       context: .
     ports:
       - "3000:80"
-    hostname: 
+    hostname:
       benchmark
-      
+
   browser:
     image: mcr.microsoft.com/playwright:v1.52.0-noble
     ports:

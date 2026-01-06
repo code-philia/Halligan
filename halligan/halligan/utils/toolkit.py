@@ -11,8 +11,8 @@ class Tool:
             self.owner = handler.fget.__qualname__.split(".")[0]
             self.name = handler.fget.__name__
             self.parameters = {}
-            self.return_type = self.handler.fget.__annotations__.get('return', None)
-            
+            self.return_type = self.handler.fget.__annotations__.get("return", None)
+
         elif isinstance(handler, Callable):
             qualname = handler.__qualname__.split(".")
             self.owner = None if len(qualname) == 1 else qualname[0]
@@ -20,16 +20,16 @@ class Tool:
             self.parameters = {k: self._format_type_hint(v) for k, v in get_type_hints(self.handler).items()}
             self.parameters.pop("return", None)
             self.parameters.pop("self", None)
-            self.return_type = self.handler.__annotations__.get('return', None)
+            self.return_type = self.handler.__annotations__.get("return", None)
 
         else:
             raise TypeError("Tool handler must be a property or callable.")
-          
+
         self.docs = self._get_docs()
 
     def __str__(self) -> str:
         return self.docs
-    
+
     def _format_type_hint(self, type_hint):
         """
         Formats the type hint
@@ -38,21 +38,21 @@ class Tool:
         """
         if type_hint is type(None):
             return None
-        
-        elif hasattr(type_hint, '__origin__'):
+
+        elif hasattr(type_hint, "__origin__"):
             origin, args = type_hint.__origin__, type_hint.__args__
             base_name = origin.__name__
             if args:
                 args_names = [self._format_type_hint(arg) for arg in args]
                 return f"{base_name}[{', '.join(args_names)}]"
             return base_name
-        
-        elif hasattr(type_hint, '__name__'):
+
+        elif hasattr(type_hint, "__name__"):
             # Handle non-generic types (e.g., int, str)
             return type_hint.__name__
-        
+
         return str(type_hint)
-        
+
     def _get_docs(self) -> str:
         """
         Convert tool (function) into a string that can be inserted into prompt.
@@ -77,7 +77,7 @@ class Tool:
         if isinstance(self.handler, Callable):
             parameters = ", ".join([f"{k}: {v}" if v is not None else f"{k}" for k, v in self.parameters.items()])
             parameters = f"({parameters})" if parameters else "()"
-        
+
         docstring = inspect.cleandoc(self.handler.__doc__ or "")
         docstring = indent(f"\n{docstring}", "\t") if docstring else ""
 
@@ -92,7 +92,7 @@ class Toolkit:
 
         Args:
             tools (list[Tool]): A list of callable objects (functions, class methods, etc.) or properties.
-            dependencies (dict[str, Any]): A dictionary of dependencies (global variables or other objects) 
+            dependencies (dict[str, Any]): A dictionary of dependencies (global variables or other objects)
                                         to be made available for dynamic execution with `exec()`.
         """
         self.tools = [Tool(tool) for tool in tools]

@@ -1,0 +1,20 @@
+.DS_Store
+__pycache__/
+
+# Test outputs & logs
+halligan/test-results/
+halligan/*.log
+results.log
+junit-*.xml
+
+# Python cache artifacts
+*.pyc
+*.pyo
+*.pyd
+
+# Benchmarks and temp files
+benchmark/**/*.log
+*/temp.txt
+
+# Large files
+*.pdf

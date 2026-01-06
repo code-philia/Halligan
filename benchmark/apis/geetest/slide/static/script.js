@@ -5,7 +5,7 @@ function init(id) {
         challenge_frame.onload = async () => {
             const container = challenge_frame.contentWindow;
             const challenge = container.document.querySelector(".geetest_container");
-        
+
             let response = await fetch(`./challenge/${id}`);
             let data = await response.json();
             if (!response.ok) {
@@ -86,8 +86,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: this.state
             })
         }

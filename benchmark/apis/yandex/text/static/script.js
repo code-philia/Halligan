@@ -17,7 +17,7 @@ function init(id) {
 class Captcha {
     /**
      * @param {string} id
-     * @param {string} image 
+     * @param {string} image
      */
     constructor(id, image) {
         this.id = id;
@@ -38,8 +38,8 @@ class Captcha {
         let config = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                id: this.id, 
+            body: JSON.stringify({
+                id: this.id,
                 state: state
             })
         }

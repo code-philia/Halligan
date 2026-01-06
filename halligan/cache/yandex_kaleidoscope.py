@@ -8,8 +8,8 @@ def stage1(frames):
 
 def stage2(frames):
     # Frame 2 contains the slider, which is the main interactable element
-    slider = frames[2].get_element(position='left', details='blue button with an arrow pointing right')
-    slider.set_element_as(interactable='SLIDEABLE_X')
+    slider = frames[2].get_element(position="left", details="blue button with an arrow pointing right")
+    slider.set_element_as(interactable="SLIDEABLE_X")
 
     # Frame 1 is dependent on Frame 2, so it should not be marked as interactable
     # Frame 0 is also dependent on Frame 2, so it should not be marked as interactable

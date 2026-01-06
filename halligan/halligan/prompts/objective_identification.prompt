@@ -1,15 +1,27 @@
 ## Objective
 The task image contains ${frames} frame(s).
 
-First, provide one-sentence visual description of each frame.
-Second, identify the relationships between frames.
-Third, using the information, identify the sequential events and the final visual criteria that leads to solving the task.
-
-Use these Python tools:
-${tools}
+Return a single JSON object that contains:
+1) One-sentence visual description of each frame
+2) Relationships between frames
+3) The overall task objective (generic, does not reveal the answer)
 
 ## Guidelines
-1. The output should be a Python block.
-2. The third step should be generic enough, it should not reveal the answer.
-3. In the third step, all event should begin with atomic verbs like `click`, `slide`, `drag`, `draw` and refer to choices/states rather than objects.
-4. Please describe rectangle boxes with hints (e.g., case sensitivity), instructions, or placeholders as input fields.
+1. Output MUST be valid JSON. Do not wrap it in markdown fences. Do not include any other text.
+2. JSON schema:
+   {
+     "descriptions": ["..."],              // length = ${frames}
+     "relations": [
+       {"from": 0, "to": 1, "relationship": "..."},
+       {"from": 0, "to": null, "relationship": "..."}
+     ],
+     "objective": "..."
+   }
+3. `descriptions[i]` must correspond to Frame i.
+4. `objective` must be generic enough and must not reveal the concrete answer.
+5. When describing the objective, use atomic verbs like "click", "slide", "drag", "draw", and refer to choices/states rather than hidden answer objects.
+
+## Optional MCP context (read-only)
+If you need to inspect available resources (e.g., runtime configuration), you may request them by outputting
+exactly ONE JSON object:
+{"mcp": {"method": "resources/list", "params": {}}}

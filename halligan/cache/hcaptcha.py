@@ -1,5 +1,5 @@
-from halligan.utils.vision_tools import compare
 from halligan.utils.action_tools import click, select
+from halligan.utils.vision_tools import compare
 
 
 def stage1(frames):
@@ -12,11 +12,11 @@ def stage2(frames):
             # Get the 'Skip' button and mark it as NEXT
             skip_button = frame.get_element(position="down", details="gray rectangular button with 'Skip'")
             skip_button.set_element_as(interactable="NEXT")
-        
+
         elif frame == frames[1]:  # Frame 1
             # Mark the frame as POINTABLE for selecting matching entities
             frame.set_frame_as(interactable="POINTABLE")
-        
+
         elif frame in frames[2:]:  # Frames 2-10
             # Mark each frame as SELECTABLE for matching entities
             frame.set_frame_as(interactable="SELECTABLE")

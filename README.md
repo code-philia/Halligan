@@ -3,61 +3,83 @@
 [![Paper](https://img.shields.io/badge/Paper-green)](http://linyun.info/publications/usenix-sec25.pdf)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-📢 [[Project Page](https://halligan.pages.dev/)] [[Examples](https://github.com/code-philia/Halligan/tree/main/examples)] [[Zenodo](https://zenodo.org/records/15709075)] [[Models](https://huggingface.co/code-philia/halligan-models/tree/main)]
+Halligan is a vision-language model (VLM) agent designed to solve visual CAPTCHA challenges. It is published in
+*"Are CAPTCHAs Still Bot-hard? Generalized Visual CAPTCHA Solving with Agentic Vision Language Model"* (USENIX Security'25).
 
-Halligan is a vision-language model (VLM) agent designed to solve visual CAPTCHA challenges. It is published in *"Are CAPTCHAs Still Bot-hard? Generalized Visual CAPTCHA Solving with Agentic Vision Language Model"* (USENIX Security'25)
+> **Disclaimer (research only)**
+> - Do not use this project to bypass CAPTCHAs on real-world services.
+> - Follow ethical and legal requirements and the usage policies of any model providers you use.
+> - You are solely responsible for any misuse.
 
-> [!IMPORTANT] 
-> **Disclaimer:**
-> Halligan is provided strictly for *research purposes* only. By using this tool, you agree to:
-> - Abide by ethical principles of Internet and AI usage
-> - Not use Halligan to bypass CAPTCHA protections on real-world services
-> - Not violate the terms of service or usage policies of any vision-language model (VLM) providers (e.g., OpenAI, Anthropic, etc.)
->
-> You are solely responsible for any misuse of this system, including activities that result in harm, unauthorized access, or financial loss to others. The authors disclaim any liability arising from improper or malicious use.
+## This fork: security + engineering hardening
 
-## Environment
+This repo includes a security-focused refactor:
+- Removed model-output `exec()` and `eval()` execution paths (RCE hardening).
+- Switched Stage1/2/3 to **JSON outputs + schema validation + allowlisted executor**.
+- Added a **local-only benchmark** default guard (`HALLIGAN_ALLOW_NONLOCAL_BENCHMARK=1` to override intentionally).
+- Added an MCP-inspired (**MCP-lite**) layer that exposes tools as controlled capabilities and runtime context as queryable resources.
 
-- **Hardware Dependencies:** We tested the functionality on a desktop computer with 16GB of GPU VRAM (Optional), 8GB of system RAM, and 16GB of available disk space.
+See the "MCP-lite" section below for usage notes.
 
-- **Software Dependencies:** We recommend using Linux. Our setup was tested on Ubuntu 20.04.3 LTS with Pixi 0.47.0, CUDA 12.1 (Optional), Docker 24.0.7, and Docker Compose 2.21.0.
+## Quickstart
 
-## Setup
+1) Start benchmark + browser (Docker)
+```bash
+docker compose up -d --build
+```
 
-1. Install [Docker Desktop](https://docs.docker.com/compose/install/) and [Pixi](https://pixi.sh/dev/installation/).
+2) Create Halligan env + config
+```bash
+cd halligan
+pixi install
+cp .env.example .env
+```
 
-2. Run the benchmark server and browser using Docker:
+3) (Optional) Download additional local models (large)
+```bash
+cd halligan
+bash get_models.sh
+```
 
-    ```bash
-    cd benchmark
-    docker compose up
-    ```
+## Tests
 
-3. To setup Halligan, setup the Pixi environment in `/halligan`. Then, download the models used in Halligan. Finally, edit the .env file to include your OpenAI API key and other relevant credentials.
+- Unit tests (no services):
+```bash
+cd halligan
+pixi run pytest -m 'not integration' -q
+```
 
-    ```bash
-    cd halligan
-    pixi install
-    bash get_models.sh
-    cp .env.example .env
-    ```
+- Integration tests (requires Docker services):
+```bash
+cd halligan
+pixi run pytest -m integration -q
+```
 
-## Usage
+## MCP-lite (tools + resources)
 
-1. (Sanity Check) Verify that the benchmark, browser, and Halligan’s core components are all functional:
+This fork includes a small MCP-inspired layer in `halligan/halligan/mcp/` that supports:
+- **Tools as capabilities**: `tools/list` exposes allowlisted tool metadata.
+- **Context as resources**: `resources/list` / `resources/read` expose read-only runtime context (objective, observation summaries, examples).
+- **Policy-first enforcement**: `MCPPolicy` is the choke point for allowlists and payload clipping to prevent prompt-token blow-up.
 
-    ```bash
-    pixi run pytest basic_test.py --verbose
-    ```
+### How it is used by the agent
+Stage 1/2/3 prompts may request additional context by outputting a single MCP request object, e.g.:
+```json
+{"mcp":{"method":"resources/read","params":{"uri":"mcp://observation/relations"}}}
+```
+The runtime executes the request (read-only) and appends the response back into the prompt, then the model outputs the final stage JSON.
 
-2. (Generate CAPTCHA Solution Scripts) This will run Halligan to generate Python solutions for 26 types of CAPTCHAs. Output is saved to `/results/generation`.
+### Stdio (diagnostic / introspection)
+You can run a minimal stdio server:
+```bash
+python -m halligan.mcp
+```
+Then send one JSON-RPC request per line:
+```json
+{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}
+```
 
-    ```bash
-    pixi run python generate.py
-    ```
+## Notes
 
-3. (Execute the Solutions) This will run the generated solutions and demonstrate Halligan solving the CAPTCHAs. Results are saved to `/results/execution`.
-
-    ```
-    pixi run python execute.py
-    ```
+- `BROWSER_URL` should match the repo root `docker-compose.yml` mapping (`ws://127.0.0.1:5001/`).
+- `BENCHMARK_URL` is loaded inside the remote browser container; use `http://host.docker.internal:3334` on Docker Desktop.

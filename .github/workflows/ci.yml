@@ -1,0 +1,198 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, import-from-local-20251229 ]
+    paths-ignore:
+      - 'README.md'
+      - 'examples/**'
+      - '**/*.ipynb'
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'examples/**'
+      - '**/*.ipynb'
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: 'Run integration tests (requires services)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false','true']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    outputs:
+      integration: ${{ steps.integration_filter.outputs.integration }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect integration-impacting changes
+        id: integration_filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            integration:
+              - 'docker-compose.yml'
+              - 'Makefile'
+              - 'halligan/**'
+              - 'benchmark/**'
+              - '.github/workflows/**'
+
+      - name: Set up Pixi (with cache)
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: halligan/pyproject.toml
+          cache: false
+          run-install: false
+
+      - name: Install deps (CPU)
+        working-directory: halligan
+        run: pixi install --locked --frozen
+
+      - name: Run pre-commit (apply fixes)
+        working-directory: halligan
+        run: pixi run precommit || true
+
+      - name: Verify pre-commit is clean
+        working-directory: halligan
+        run: pixi run precommit
+
+      - name: Ensure no unstaged changes after formatting
+        run: |
+          set -euo pipefail
+          # `pre-commit` may auto-fix formatting. This check ensures we don't silently
+          # leave the repo dirty in CI (developers must commit formatting changes).
+          if ! git diff --quiet; then
+            echo "Unstaged changes detected after formatting." >&2
+            echo "Please run pre-commit locally and commit the changes." >&2
+            git status --porcelain=v1 || true
+            # Keep logs small: print a stat summary instead of full diffs.
+            git --no-pager diff --stat || true
+            exit 1
+          fi
+
+      - name: Run unit tests (skip integration) with JUnit
+        working-directory: halligan
+        run: |
+          mkdir -p test-results
+          pixi run pytest -m 'not integration' --junitxml=test-results/junit.xml -vv
+        continue-on-error: false
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: halligan/test-results
+          if-no-files-found: ignore
+
+      - name: Upload logs if present
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            halligan/**/*.log
+            **/.pytest_cache/**
+          if-no-files-found: ignore
+
+  integration:
+    if: >-
+      ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.run_integration == 'true') ||
+          (github.event_name == 'push' &&
+           (github.ref == 'refs/heads/import-from-local-20251229' || needs.lint-and-test.outputs.integration == 'true')) ||
+          (github.event_name == 'pull_request' &&
+           (contains(github.event.pull_request.labels.*.name, 'run-integration') ||
+            needs.lint-and-test.outputs.integration == 'true')) }}
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start benchmark + browser services
+        run: |
+          docker compose up -d --build benchmark browser
+          # Allow services to warm up
+          sleep 5
+
+      - name: Export service endpoints
+        run: |
+          # Host port is 5001 (see docker-compose.yml: "5001:5000")
+          echo "BROWSER_URL=ws://127.0.0.1:5001/" >> $GITHUB_ENV
+          # NOTE: `BENCHMARK_URL` is loaded inside the *browser container* (page.goto),
+          # so it must be reachable from Docker. `host.docker.internal` is injected
+          # via extra_hosts in docker-compose.yml.
+          echo "BENCHMARK_URL=http://host.docker.internal:3334" >> $GITHUB_ENV
+          echo "BENCHMARK_HTTP_URL=http://127.0.0.1:3334" >> $GITHUB_ENV
+
+      - name: Wait for browser health
+        run: |
+          # Wait for benchmark first (host reachable)
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3334/health 2>/dev/null | grep -q '"status"'; then
+              break
+            fi
+            sleep 2
+          done
+
+          for i in {1..60}; do
+            if bash -c "</dev/tcp/127.0.0.1/5001" 2>/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Browser not healthy (TCP 5001 not accepting connections)" >&2
+          docker compose logs benchmark browser || true
+          exit 1
+
+      - name: Set up Pixi (with cache)
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: halligan/pyproject.toml
+          cache: false
+          run-install: false
+
+      - name: Install deps (CPU)
+        working-directory: halligan
+        run: pixi install --locked --frozen
+
+      - name: Run integration tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        working-directory: halligan
+        run: |
+          set -euo pipefail
+          mkdir -p test-results
+          pixi run pytest -m integration --junitxml=test-results/junit-integration.xml -vv || TEST_STATUS=$?
+
+          if [ "${TEST_STATUS:-0}" != "0" ]; then
+            echo "Integration tests failed; dumping docker compose logs" >&2
+            docker compose logs benchmark browser || true
+            exit "$TEST_STATUS"
+          fi
+
+      - name: Upload integration results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-integration
+          path: halligan/test-results
+          if-no-files-found: ignore
+
+      - name: Tear down services
+        if: always()
+        run: docker compose down -v

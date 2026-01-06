@@ -1,22 +1,21 @@
-import os
 import json
+import os
 
-from flask import Blueprint, render_template, jsonify, request
-
+from flask import Blueprint, jsonify, render_template, request
 
 challenges_path = os.path.join(os.path.dirname(__file__), "challenges.json")
 challenges_file = open(challenges_path)
 challenges_dict: dict = json.load(challenges_file)
 challenges: list = challenges_dict.get("challenges", [])
-text = Blueprint('text', __name__, template_folder="templates", static_folder="static")
+text = Blueprint("text", __name__, template_folder="templates", static_folder="static")
 
 
-@text.route('/<id>', methods=["GET"])
+@text.route("/<id>", methods=["GET"])
 def init(id: str):
-    return render_template('yandex_text/index.html', id=id)
+    return render_template("yandex_text/index.html", id=id)
 
 
-@text.route('/challenge/<id>', methods=["GET"])
+@text.route("/challenge/<id>", methods=["GET"])
 def request_challenge(id: str):
     id = int(id)
     if id <= 0 or id > len(challenges):

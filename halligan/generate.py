@@ -1,36 +1,35 @@
+import importlib.util
+import logging
 import os
 import sys
-import logging
 import traceback
-import importlib.util
+from datetime import datetime
 from io import BytesIO
 from textwrap import indent
-from datetime import datetime
 
-from PIL import Image
 from dotenv import load_dotenv
-from playwright.sync_api import sync_playwright, Page
+from PIL import Image
+from playwright.sync_api import Page, sync_playwright
 
+import halligan.prompts as Prompts
 import halligan.utils.action_tools as action_tools
 import halligan.utils.examples as Examples
-import halligan.prompts as Prompts
-
-from samples import SAMPLES
-from halligan.agents import GPTAgent
-from halligan.utils.logger import Trace
-from halligan.agents import Agent
-from halligan.utils.constants import Stage, InteractableElement
-from halligan.utils.action_tools import action_toolkits
-from halligan.utils.vision_tools import vision_toolkits
-from halligan.utils.layout import Frame, get_observation, get_frames
+from halligan.agents import Agent, GPTAgent
+from halligan.runtime.config import RuntimeConfig
+from halligan.runtime.errors import UnsafeTargetError
 from halligan.stages.stage1 import objective_identification
 from halligan.stages.stage2 import structure_abstraction
-
+from halligan.utils.action_tools import action_toolkits
+from halligan.utils.constants import InteractableElement, Stage
+from halligan.utils.layout import Frame, get_frames, get_observation
+from halligan.utils.logger import Trace
+from halligan.utils.vision_tools import vision_toolkits
+from samples import SAMPLES
 
 # Setup logging
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 file_handler = logging.FileHandler(f"agent-{timestamp}.log")
 file_handler.setFormatter(formatter)
 console_handler = logging.StreamHandler()
@@ -50,6 +49,28 @@ CACHE_PATH = os.path.join(BASE_PATH, "cache")
 BROWSER_URL = os.getenv("BROWSER_URL")
 BENCHMARK_URL = os.getenv("BENCHMARK_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+
+def validate_environment() -> None:
+    """Ensure required environment variables are present and safe before running generation."""
+    errors: list[str] = []
+
+    try:
+        RuntimeConfig.from_env().validate()
+    except UnsafeTargetError as exc:
+        errors.append(str(exc))
+
+    if not BROWSER_URL:
+        errors.append("Missing `BROWSER_URL` (Playwright websocket endpoint).")
+    if not BENCHMARK_URL:
+        errors.append("Missing `BENCHMARK_URL` (benchmark server base URL).")
+    if not OPENAI_API_KEY:
+        errors.append("Missing `OPENAI_API_KEY`.")
+
+    if errors:
+        for problem in errors:
+            logger.error(problem)
+        raise SystemExit(1)
 
 
 def prepare_captcha(captcha_type: str, page: Page):
@@ -74,7 +95,7 @@ def prepare_captcha(captcha_type: str, page: Page):
 
 
 @Trace.section("Solution Composition")
-def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> None: 
+def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> None:
     """
     Agent composes a Python executable solution using vision and action tools.
     """
@@ -82,21 +103,22 @@ def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> N
     dependencies = {}
     action_tool_docs, vision_tool_docs = {}, {}
     _, images, image_captions, descriptions, relations, interactable_types = get_observation(frames)
-    
+
     for interactable_type in interactable_types:
         # Prepare action and vision tools based on interactables
-        for (toolkits, docs) in [(action_toolkits, action_tool_docs), (vision_toolkits, vision_tool_docs)]:
+        for toolkits, docs in [(action_toolkits, action_tool_docs), (vision_toolkits, vision_tool_docs)]:
             toolkit = toolkits.get(interactable_type)
             if toolkit:
-                docs.update({
-                    f"{tool.owner}.{tool.name}" if tool.owner else tool.name: tool.docs 
-                    for tool in toolkit.tools
-                })
+                docs.update(
+                    {f"{tool.owner}.{tool.name}" if tool.owner else tool.name: tool.docs for tool in toolkit.tools}
+                )
                 dependencies.update(toolkit.dependencies)
 
         # Prepare in-context learning examples
-        if interactable_type == InteractableElement.NEXT.name: continue
-        else: examples.append(Examples.get(interactable_type))
+        if interactable_type == InteractableElement.NEXT.name:
+            continue
+        else:
+            examples.append(Examples.get(interactable_type))
 
     # Prepare prompt
     prompt = Prompts.get(
@@ -106,14 +128,14 @@ def solution_composition(agent: Agent, frames: list[Frame], objective: str) -> N
         objective=objective,
         examples="\n\n".join(examples),
         action_tools=indent("\n\n".join(action_tool_docs.values()), "\t"),
-        vision_tools=indent("\n\n".join(vision_tool_docs.values()), "\t")
+        vision_tools=indent("\n\n".join(vision_tool_docs.values()), "\t"),
     )
 
-    # Request script from agent 
+    # Request script from agent
     agent(prompt, images, image_captions)
     agent.reset()
 
-    
+
 def generate_script(captcha_type: str, id: int, region: dict):
     # Load agent
     agent = GPTAgent(api_key=OPENAI_API_KEY)
@@ -140,7 +162,7 @@ def generate_script(captcha_type: str, id: int, region: dict):
 
             x, y = region["x"], region["y"]
             captcha = Image.open(BytesIO(page.screenshot(clip=region)))
-    
+
             trace_path = os.path.join("results", "generate", f"{captcha_type.replace("/", "_")}.ipynb")
             Trace.start(captcha, trace_path)
 
@@ -151,19 +173,22 @@ def generate_script(captcha_type: str, id: int, region: dict):
             logger.info("\t[Stage 2] Structure Abstraction")
             solution_composition(agent, frames, objective)
             logger.info("\t[Stage 3] Solution Composition")
-            
+
         except Exception as e:
             logger.error(f"Error: {e}")
             logger.error(traceback.format_exc())
 
         finally:
             Trace.stop()
-            if not page.is_closed(): page.close()
+            if not page.is_closed():
+                page.close()
             context.close()
             browser.close()
 
 
 for i, (captcha_type, sample_info) in enumerate(SAMPLES.items()):
+    if i == 0:
+        validate_environment()
     logger.info(f"Generating script for CAPTCHA ({i+1} out of {len(SAMPLES)}): {captcha_type}")
 
     sample_id = sample_info["id"]

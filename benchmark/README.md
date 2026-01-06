@@ -17,7 +17,7 @@ Each CAPTCHA type is implemented as a modular Flask Blueprint (`/apis`) that enc
     ```
 
 2. **Start Flask Server**
-    
+
     Server defaults to `localhost:3334`.
     ```bash
     python server.py

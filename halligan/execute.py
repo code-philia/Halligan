@@ -1,28 +1,30 @@
+import importlib.util
+import logging
 import os
 import sys
-import logging
 import traceback
-import importlib.util
-from io import BytesIO
 from datetime import datetime
+from io import BytesIO
 
-from PIL import Image
 from dotenv import load_dotenv
-from playwright.sync_api import sync_playwright, Page
+from PIL import Image
+from playwright.sync_api import Page, sync_playwright
 
 import halligan.utils.action_tools as action_tools
-from samples import SAMPLES
 from halligan.agents import GPTAgent
-from halligan.utils.logger import Trace
-from halligan.utils.layout import get_frames, get_observation
+from halligan.runtime.config import RuntimeConfig
+from halligan.runtime.errors import UnsafeTargetError
 from halligan.stages.stage1 import objective_identification
 from halligan.stages.stage2 import structure_abstraction
 from halligan.stages.stage3 import solution_composition
+from halligan.utils.layout import get_frames, get_observation
+from halligan.utils.logger import Trace
+from samples import SAMPLES
 
 # Setup logging
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 file_handler = logging.FileHandler(f"agent-{timestamp}.log")
 file_handler.setFormatter(formatter)
 console_handler = logging.StreamHandler()
@@ -42,6 +44,48 @@ CACHE_PATH = os.path.join(BASE_PATH, "cache")
 BROWSER_URL = os.getenv("BROWSER_URL")
 BENCHMARK_URL = os.getenv("BENCHMARK_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+
+def validate_environment() -> None:
+    """Ensure required environment variables are present and well-formed."""
+    errors = []
+
+    # Enforce safer defaults: only allow local benchmark endpoints unless explicitly overridden.
+    try:
+        RuntimeConfig.from_env().validate()
+    except UnsafeTargetError as exc:
+        errors.append(str(exc))
+
+    if not BROWSER_URL:
+        errors.append(
+            "Missing `BROWSER_URL`. Provide a Playwright websocket endpoint, for example " "`ws://localhost:3000/`."
+        )
+    elif not BROWSER_URL.startswith(("ws://", "wss://")):
+        errors.append(f"`BROWSER_URL` should start with `ws://` or `wss://` (current: {BROWSER_URL!r}).")
+
+    if not BENCHMARK_URL:
+        errors.append(
+            "Missing `BENCHMARK_URL`. Set it to the benchmark server base URL, such as " "`http://localhost:3334`."
+        )
+    elif not BENCHMARK_URL.startswith(("http://", "https://")):
+        errors.append(f"`BENCHMARK_URL` should start with `http://` or `https://` (current: {BENCHMARK_URL!r}).")
+
+    if not OPENAI_API_KEY:
+        errors.append("Missing `OPENAI_API_KEY`. Export a valid OpenAI API key or populate it in your `.env`.")
+    elif not OPENAI_API_KEY.startswith("sk-"):
+        errors.append("`OPENAI_API_KEY` does not look like a standard OpenAI key (expected prefix `sk-`).")
+
+    if errors:
+        logger.error("Environment validation failed:")
+        for problem in errors:
+            logger.error("  - %s", problem)
+
+        hint_path = os.path.join(BASE_PATH, ".env")
+        logger.error(
+            "Update the environment variables (for example via %s) and rerun the command.",
+            hint_path,
+        )
+        raise SystemExit(1)
 
 
 def prepare_captcha(captcha_type: str, page: Page):
@@ -92,18 +136,21 @@ def solve_captcha(captcha_type: str, id: int, region: dict) -> bool:
 
             x, y = region["x"], region["y"]
             captcha = Image.open(BytesIO(page.screenshot(clip=region)))
-    
+
             trace_path = os.path.join("results", "execute", f"{captcha_type.replace("/", "_")}.ipynb")
             Trace.start(captcha, trace_path)
 
             @Trace.section("Objective Identification")
-            def stage1(frames): return cache.stage1(frames)
+            def stage1(frames):
+                return cache.stage1(frames)
 
             @Trace.section("Structure Abstraction")
-            def stage2(frames): return cache.stage2(frames)
+            def stage2(frames):
+                return cache.stage2(frames)
 
             @Trace.section("Solution Composition")
-            def stage3(frames): return cache.stage3(frames)
+            def stage3(frames):
+                return cache.stage3(frames)
 
             frames = get_frames(x, y, captcha)
 
@@ -118,7 +165,7 @@ def solve_captcha(captcha_type: str, id: int, region: dict) -> bool:
                 stage2(frames)
             else:
                 structure_abstraction(agent, frames, objective)
-            
+
             agent.reset()
 
             with page.expect_response(lambda r: "/submit" in r.url, timeout=60000) as response_info:
@@ -127,32 +174,38 @@ def solve_captcha(captcha_type: str, id: int, region: dict) -> bool:
                     stage3(frames)
                 else:
                     solution_composition(agent, frames, objective)
-                
+
             response = response_info.value
             data: dict = response.json()
             solved = data.get("solved", None)
 
             agent.reset()
-            
+
         except Exception as e:
             logger.error(f"Error: {e}")
             logger.error(traceback.format_exc())
 
         finally:
             Trace.stop()
-            if not page.is_closed(): page.close()
+            if not page.is_closed():
+                page.close()
             context.close()
             browser.close()
-    
+
     return solved
 
 
-for i, (captcha_type, sample_info) in enumerate(SAMPLES.items()):
-    logger.info(f"Testing CAPTCHA ({i+1} out of {len(SAMPLES)}): {captcha_type}")
+def main():
+    validate_environment()
 
-    sample_id = sample_info["id"]
-    sample_region = sample_info["region"]
-    sample_x = sample_region["x"]
-    sample_y = sample_region["y"]
-    solved = solve_captcha(captcha_type, sample_id, sample_region)
-    logger.info(f"Solved: {solved}")
+    for index, (captcha_type, sample_info) in enumerate(SAMPLES.items(), start=1):
+        logger.info(f"Testing CAPTCHA ({index} out of {len(SAMPLES)}): {captcha_type}")
+
+        sample_id = sample_info["id"]
+        sample_region = sample_info["region"]
+        solved = solve_captcha(captcha_type, sample_id, sample_region)
+        logger.info(f"Solved: {solved}")
+
+
+if __name__ == "__main__":
+    main()
