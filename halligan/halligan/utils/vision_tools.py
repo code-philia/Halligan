@@ -27,10 +27,16 @@ _AGENT_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Replace raw global `agent` with a proxy singleton so callers that use
 # `agent(prompt, images, captions)` or call `agent.reset()` continue to
-# work without changing call sites.
+# work without changing call sites. Create the GPTAgent instance unconditionally
+# (matching original behavior where an agent object existed regardless of API key).
 class _AgentState:
     def __init__(self) -> None:
-        self._agent = GPTAgent(api_key=_AGENT_API_KEY) if _AGENT_API_KEY else None
+        # Initialize GPTAgent even if API key is None to preserve prior behavior
+        try:
+            self._agent = GPTAgent(api_key=_AGENT_API_KEY)
+        except Exception:
+            # If GPTAgent construction fails, keep None and let callers handle
+            self._agent = None
 
 
 class _AgentProxy:

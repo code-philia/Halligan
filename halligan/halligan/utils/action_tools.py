@@ -58,14 +58,66 @@ def set_page(p: Page):
     _ACTION_PAGE_STATE._page = p
 
 
-def screenshot(region: list[float] = None) -> PIL.Image.Image:
-    if region:
-        region = {
-            "x": region[0], "y": region[1],
-            "width": region[2], "height": region[3]
-        }
-    image_bytes = page.screenshot(clip=region)
-    return PIL.Image.open(io.BytesIO(image_bytes)).convert("RGB")
+def _to_int(value, default=0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return int(default)
+
+
+def _normalize_region(region: list[float] | None) -> dict | None:
+    """Normalize a region list [x,y,w,h] into a Playwright clip dict.
+
+    Recoverable cases:
+    - If region is None -> return None (full page screenshot)
+    - If width/height <= 0 -> return None (fallback to full page)
+    - Negative x/y -> clamp to 0
+    - Non-numeric values -> coerce to int where possible or fallback
+    """
+    if not region:
+        return None
+    if not isinstance(region, (list, tuple)) or len(region) < 4:
+        return None
+
+    x = max(0, _to_int(region[0], 0))
+    y = max(0, _to_int(region[1], 0))
+    w = _to_int(region[2], 0)
+    h = _to_int(region[3], 0)
+
+    if w <= 0 or h <= 0:
+        return None
+
+    return {"x": x, "y": y, "width": w, "height": h}
+
+
+def screenshot(region: list[float] = None, page: Page | None = None) -> PIL.Image.Image:
+    """Take a screenshot via Playwright page with defensive region handling.
+
+    Args:
+        region: [x, y, w, h] or None
+        page: explicit Playwright Page, fallback to module page proxy
+
+    Returns:
+        PIL.Image.Image
+    """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available for screenshot. Call set_page(page) or pass page param.")
+
+    clip = _normalize_region(region)
+    try:
+        if clip is None:
+            image_bytes = page.screenshot()
+        else:
+            image_bytes = page.screenshot(clip=clip)
+    except Exception as e:
+        # Provide a clear error for unrecoverable Playwright errors
+        raise RuntimeError(f"Failed to take screenshot: {e}") from e
+
+    try:
+        return PIL.Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    except Exception as e:
+        raise RuntimeError(f"Failed to open screenshot image: {e}") from e
 
 
 class Choice:
@@ -310,7 +362,8 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame, pa
     Returns all cycled choices from frame.
     """
     def same_as(diff: PIL.Image.Image) -> bool:
-        if not diff_with_first.getbbox(): return True
+        if not diff or not getattr(diff, "getbbox", lambda: None)():
+            return True
         diff = diff.convert("L")
         total_diff = sum(diff.getdata())
         max_diff = diff.size[0] * diff.size[1] * 255
