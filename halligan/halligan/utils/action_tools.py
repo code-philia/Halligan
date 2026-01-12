@@ -19,12 +19,43 @@ from halligan.utils.vision_tools import match
 
 load_dotenv()
 
-page: Page | None = None
+
+# Replace raw global `page` with a proxy singleton that forwards to an
+# underlying Playwright `Page` instance. This preserves the module-level
+# name `page` so existing imports/calls continue to work (e.g. `page.mouse`).
+class _ActionPageState:
+    def __init__(self) -> None:
+        self._page: Page | None = None
+
+
+class _PageProxy:
+    """A transparent proxy to the underlying Playwright Page.
+
+    Behaves like the real `Page` when initialized. If not initialized,
+    attribute access raises a clear RuntimeError. Implements __bool__ so
+    checks like `if page:` still work.
+    """
+    def __getattr__(self, name: str):
+        page = _ACTION_PAGE_STATE._page
+        if page is None:
+            raise RuntimeError("Playwright Page has not been initialized. Call set_page(page) first.")
+        return getattr(page, name)
+
+    def __bool__(self) -> bool:
+        return _ACTION_PAGE_STATE._page is not None
+
+
+_ACTION_PAGE_STATE = _ActionPageState()
+page = _PageProxy()
 
 
 def set_page(p: Page):
-    global page
-    page = p
+    """Set the underlying Playwright `Page` instance used by the actions.
+
+    Keeps the original function name and signature so callers do not need
+    to change their code.
+    """
+    _ACTION_PAGE_STATE._page = p
 
 
 def screenshot(region: list[float] = None) -> PIL.Image.Image:
@@ -38,37 +69,47 @@ def screenshot(region: list[float] = None) -> PIL.Image.Image:
 
 
 class Choice:
-    def __init__(self, image: PIL.Image.Image) -> None:
+    def __init__(self, image: PIL.Image.Image, page: Page | None = None) -> None:
         self._image = image
+        # prefer explicit page, fallback to module proxy
+        self._page = page or _ACTION_PAGE_STATE._page
 
     @property
     def image(self) -> PIL.Image.Image:
         return self._image
     
-    def release(self) -> None:
+    def release(self, page: Page | None = None) -> None:
         """
         (For click_and_hold) Release from holding. 
         """
+        page = page or self._page
+        if page is None:
+            raise RuntimeError("No Playwright Page available to release mouse. Call set_page(page) or pass page param.")
         page.mouse.up()
 
 
 class SelectChoice:
-    def __init__(self, index: int, image: PIL.Image.Image, next: Element) -> None:
+    def __init__(self, index: int, image: PIL.Image.Image, next: Element, page: Page | None = None) -> None:
         self._image = image
         self._index = index
         self._next = next
+        self._page = page or _ACTION_PAGE_STATE._page
 
     @property
     def image(self) -> PIL.Image.Image:
         return self._image
 
-    def select(self) -> None:
+    def select(self, page: Page | None = None) -> None:
         """
         (For get_all_choices) Select this choice.
         """
-        x = self._next.x + self._next.w // 2
-        y = self._next.y + self._next.h // 2
-        for _ in range(self._index):
+        page = page or self._page
+        if page is None:
+            raise RuntimeError("No Playwright Page available to select choice. Call set_page(page) or pass page param.")
+
+        x = int(self._next.x + self._next.w // 2)
+        y = int(self._next.y + self._next.h // 2)
+        for _ in range(max(0, int(self._index))):
             page.mouse.click(x, y)
 
 
@@ -80,7 +121,8 @@ class SlideChoice:
         current_x: int,
         current_y: int, 
         observe: Frame,
-        track_bounds: tuple[int, int]
+        track_bounds: tuple[int, int],
+        page: Page | None = None
     ) -> None:
         self._axis = axis
         self._image = image
@@ -88,6 +130,7 @@ class SlideChoice:
         self._current_y = current_y
         self._observe = observe
         self._track_bounds = track_bounds
+        self._page = page or _ACTION_PAGE_STATE._page
         
     @property
     def image(self) -> PIL.Image.Image:
@@ -110,13 +153,19 @@ class SlideChoice:
         choices = []
         for pos in range(min_bound, max_bound, step):
             if self._axis == "x":
+                page = self._page or _ACTION_PAGE_STATE._page
+                if page is None:
+                    raise RuntimeError("No Playwright Page available for sliding. Pass page when creating SlideChoice.")
                 page.mouse.move(x=pos, y=self._current_y)
-                image = screenshot(self._observe.region)
-                choice = SlideChoice(self._axis, image, pos, self._current_y, self._observe, (min_bound, max_bound))
+                image = screenshot(self._observe.region, page=page)
+                choice = SlideChoice(self._axis, image, pos, self._current_y, self._observe, (min_bound, max_bound), page=page)
             else:
+                page = self._page or _ACTION_PAGE_STATE._page
+                if page is None:
+                    raise RuntimeError("No Playwright Page available for sliding. Pass page when creating SlideChoice.")
                 page.mouse.move(x=self._current_x, y=pos)
-                image = screenshot(self._observe.region)
-                choice = SlideChoice(self._axis, image, self._current_x, pos, self._observe, (min_bound, max_bound))            
+                image = screenshot(self._observe.region, page=page)
+                choice = SlideChoice(self._axis, image, self._current_x, pos, self._observe, (min_bound, max_bound), page=page)            
 
             choices.append(choice)
         
@@ -126,6 +175,9 @@ class SlideChoice:
         """
         Confirm this as the final choice and release slider.
         """
+        page = self._page or _ACTION_PAGE_STATE._page
+        if page is None:
+            raise RuntimeError("No Playwright Page available to release slider. Pass page when creating SlideChoice.")
         page.mouse.move(self._current_x, self._current_y)
         page.mouse.up()
     
@@ -142,6 +194,7 @@ class SwapChoice:
         self._image = image
         self._start = start
         self._end = end
+        self._page = None
         
     @property
     def preview(self) -> PIL.Image.Image:
@@ -163,25 +216,31 @@ class SwapChoice:
         """
         Executes the swap previewed in this choice.
         """
-        x1, y1 = self._start
-        x2, y2 = self._end
+        page = self._page or _ACTION_PAGE_STATE._page
+        if page is None:
+            raise RuntimeError("No Playwright Page available to execute swap. Assign ._page or pass page via set_page.")
 
-        # Attempt 1: click start and end 
-        page.mouse.click(x1, y1)
-        page.mouse.click(x2, y2)
+        x1, y1 = int(self._start[0]), int(self._start[1])
+        x2, y2 = int(self._end[0]), int(self._end[1])
 
-        # Attempt 2: drag start to end
-        page.mouse.move(x1, y1)
-        page.mouse.down()
-        page.mouse.move(x2, y2)
-        page.mouse.up()
+        # Attempt 1: click start and end
+        try:
+            page.mouse.click(x1, y1)
+            page.mouse.click(x2, y2)
+        except Exception:
+            # Fallback to drag
+            page.mouse.move(x1, y1)
+            page.mouse.down()
+            page.mouse.move(x2, y2)
+            page.mouse.up()
 
 
 class DragChoice:
-    def __init__(self, image: PIL.Image.Image, start: tuple, end: tuple) -> None:
+    def __init__(self, image: PIL.Image.Image, start: tuple, end: tuple, page: Page | None = None) -> None:
         self._image = image
         self._start = start
         self._end = end
+        self._page = page or _ACTION_PAGE_STATE._page
     
     @property
     def preview(self) -> PIL.Image.Image:
@@ -194,23 +253,31 @@ class DragChoice:
         """
         Confirm this as the final choice and drop here.
         """
-        x1, y1 = self._start
-        x2, y2 = self._end
+        page = self._page or _ACTION_PAGE_STATE._page
+        if page is None:
+            raise RuntimeError("No Playwright Page available to drop. Pass page or call set_page().")
+
+        x1, y1 = int(self._start[0]), int(self._start[1])
+        x2, y2 = int(self._end[0]), int(self._end[1])
         page.mouse.move(x1, y1)
         page.mouse.down()
         page.mouse.move(x2, y2)
         page.mouse.up()
         
 
-def click(target: Union[Frame, Element]) -> None:
+def click(target: Union[Frame, Element], page: Page | None = None) -> None:
     """
     Click a UI button.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to click. Call set_page(page) or pass page param.")
+
     x, y = target.center
-    page.mouse.click(x, y)
+    page.mouse.click(int(x), int(y))
 
 
-def click_and_hold(target: Union[Frame, Element], observe: Frame):
+def click_and_hold(target: Union[Frame, Element], observe: Frame, page: Page | None = None):
     """
     Hold until release, returns observed state while holding.
     This action happens in real-time, do not batch process.
@@ -220,6 +287,10 @@ def click_and_hold(target: Union[Frame, Element], observe: Frame):
         for choice in click_and_hold(...):
             if ask([choice.image], "ready to release?"): break
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to click and hold. Call set_page(page) or pass page param.")
+
     x, y = target.center
     region = observe.region
     page.mouse.down(x, y)
@@ -229,12 +300,11 @@ def click_and_hold(target: Union[Frame, Element], observe: Frame):
     while True:
         elapsed_time = time.time() - start_time
         if elapsed_time > timeout: break
+        image = screenshot(region, page=page)
+        yield Choice(image, page=page)
 
-        image = screenshot(region)
-        yield Choice(image)
 
-
-def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame) -> list[SelectChoice]:
+def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame, page: Page | None = None) -> list[SelectChoice]:
     """
     Cycle through all choices by clicking arrow buttons.
     Returns all cycled choices from frame.
@@ -249,32 +319,37 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame) ->
 
     index = 0
     region = observe.region
-    choices = [SelectChoice(index, screenshot(region), next_arrow)]
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to get choices. Call set_page(page) or pass page param.")
+
+    choices = [SelectChoice(index, screenshot(region, page=page), next_arrow, page=page)]
     next_x, next_y = next_arrow.center
     prev_x, prev_y = prev_arrow.center
 
     while True:
-        page.mouse.click(next_x, next_y)
-        image = screenshot(region)
+        page.mouse.click(int(next_x), int(next_y))
+        image = screenshot(region, page=page)
         diff_with_first = ImageChops.difference(image, choices[0].image)
         diff_with_prev = ImageChops.difference(image, choices[-1].image)
 
         # Same as first means we have gone through a full cycle.
-        if same_as(diff_with_first): break
+        if same_as(diff_with_first):
+            break
 
         # Same as prev means it has reached the end but can't cycle back, manually do so.
         if same_as(diff_with_prev):
-            for _ in range(len(choices) - 1): 
-                page.mouse.click(prev_x, prev_y)
+            for _ in range(len(choices) - 1):
+                page.mouse.click(int(prev_x), int(prev_y))
             break
 
         index += 1
-        choices.append(SelectChoice(index, image, next_arrow))
+        choices.append(SelectChoice(index, image, next_arrow, page=page))
 
     return choices
 
 
-def drag(start: Element, end: Point) -> list[DragChoice]:
+def drag(start: Element, end: Point, page: Page | None = None) -> list[DragChoice]:
     """
     Drag element from start to end point.
 
@@ -290,6 +365,10 @@ def drag(start: Element, end: Point) -> list[DragChoice]:
         #mask = cv2.bitwise_not(mask) 
         mask = PIL.Image.fromarray(mask).convert('L')
         return mask
+
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available for drag helper. Call set_page(page) or pass page param.")
 
     x2, y2 = end.center
     choices = []
@@ -307,63 +386,83 @@ def drag(start: Element, end: Point) -> list[DragChoice]:
                 start.h + margin * 2
             ]
             mask = get_mask(start.image)
-            image = screenshot(region)
+            image = screenshot(region, page=page)
             image.paste(start.image, box=(margin, margin), mask=mask)
-            choices.append(DragChoice(image, start.center, end=(cx, cy)))
+            choices.append(DragChoice(image, start.center, end=(cx, cy), page=page))
 
     return choices
 
 
-def draw(path: list[Point]) -> None:
+def draw(path: list[Point], page: Page | None = None) -> None:
     """
     Draw a path following a list of points.
     """
     if not path: return
 
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to draw. Call set_page(page) or pass page param.")
+
     x, y = path[0]
-    page.mouse.move(x, y)
+    page.mouse.move(int(x), int(y))
     page.mouse.down()
 
     for point in path: 
-        page.mouse.move(point.x, point.y)
+        page.mouse.move(int(point.x), int(point.y))
 
     x, y = path[-1]
-    page.mouse.move(x, y)
+    page.mouse.move(int(x), int(y))
     page.mouse.up()
 
 
-def enter(field: Union[Frame, Element], text: str) -> None:
+def enter(field: Union[Frame, Element], text: str, page: Page | None = None) -> None:
     """
     Click on an input field and enter text.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to enter text. Call set_page(page) or pass page param.")
+
     x, y = field.center
-    page.mouse.click(x, y)
-    page.keyboard.type(text)
+    page.mouse.click(int(x), int(y))
+    page.keyboard.type(str(text))
 
 
-def point(to: Point) -> None:
+def point(to: Point, page: Page | None = None) -> None:
     """
     Click on a point on a frame.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to point. Call set_page(page) or pass page param.")
+
     x, y = to.center
-    page.mouse.click(x, y)
+    page.mouse.click(int(x), int(y))
 
 
-def select(choice: Union[Frame, Element]) -> None:
+def select(choice: Union[Frame, Element], page: Page | None = None) -> None:
     """
     Select a choice.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to select. Call set_page(page) or pass page param.")
+
     x, y = choice.center
-    page.mouse.click(x, y)
+    page.mouse.click(int(x), int(y))
 
 
-def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame: Frame) -> list[SlideChoice]:
+def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame: Frame, page: Page | None = None) -> list[SlideChoice]:
     """
     Drag and move slider handle left/right while observing changes in a frame.
 
     Returns:
         observation (list[Choice]): observation over frame while sliding.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to slide. Call set_page(page) or pass page param.")
+
     track_bounds = (handle.parent.x, handle.parent.x + handle.parent.w)
     step_size = handle.w // 2   
     step = -step_size if direction == "left" else step_size
@@ -371,27 +470,31 @@ def slide_x(handle: Element, direction: Literal['left', 'right'], observe_frame:
     choices = []
     current_x = handle.x + handle.w // 2
     current_y = handle.y + handle.h // 2
-    page.mouse.move(current_x, current_y)
+    page.mouse.move(int(current_x), int(current_y))
     page.mouse.down()
 
     while track_bounds[0] < current_x + handle.w < track_bounds[1]:
         current_x += step
-        page.mouse.move(current_x, current_y)
-        image = screenshot(observe_frame.region)
+        page.mouse.move(int(current_x), int(current_y))
+        image = screenshot(observe_frame.region, page=page)
         refine_range = [track_bounds[0] + step, track_bounds[1] - step]
-        choice = SlideChoice("x", image, current_x, current_y, observe_frame, refine_range)
+        choice = SlideChoice("x", image, current_x, current_y, observe_frame, refine_range, page=page)
         choices.append(choice)
 
     return choices
 
 
-def slide_y(handle: Element, direction: Literal['up', 'down'], observe_frame: Frame) -> list[SlideChoice]:
+def slide_y(handle: Element, direction: Literal['up', 'down'], observe_frame: Frame, page: Page | None = None) -> list[SlideChoice]:
     """
     Drag and move slider handle up/down while observing changes in a frame.
 
     Returns:
         observation (list[Choice]): observation over frame while sliding.
     """
+    page = page or _ACTION_PAGE_STATE._page
+    if page is None:
+        raise RuntimeError("No Playwright Page available to slide. Call set_page(page) or pass page param.")
+
     track_bounds = (handle.parent.y, handle.parent.y + handle.parent.h)
     step_size = handle.h // 2   
     step = -step_size if direction.lower() == "down" else step_size
@@ -399,13 +502,13 @@ def slide_y(handle: Element, direction: Literal['up', 'down'], observe_frame: Fr
     choices = []
     current_x = handle.x + handle.w // 2
     current_y = handle.y + handle.h // 2
-    page.mouse.move(current_x, current_y)
+    page.mouse.move(int(current_x), int(current_y))
     page.mouse.down()
 
     while track_bounds[0] < current_y + step < track_bounds[1]:
-        page.mouse.move(current_x, current_y)
-        image = screenshot(observe_frame.region)
-        choice = SlideChoice("y", image, current_x, current_y, observe_frame, track_bounds)
+        page.mouse.move(int(current_x), int(current_y))
+        image = screenshot(observe_frame.region, page=page)
+        choice = SlideChoice("y", image, current_x, current_y, observe_frame, track_bounds, page=page)
         choices.append(choice)
         current_y += step
 
@@ -460,7 +563,8 @@ def explore(grid: Frame) -> list[SwapChoice]:
     return [choice for choices in choices_by_distance.values() for choice in choices]
 
 
-dependencies = {**globals(), "__builtins__": __builtins__, "List": List}
+_local_globals = {k: v for k, v in globals().items() if k not in ("_ACTION_PAGE_STATE", "page")}
+dependencies = {**_local_globals, "__builtins__": __builtins__, "List": List}
 
 action_toolkits: dict[str, Toolkit] = {
     "DRAGGABLE": [drag, DragChoice.preview, DragChoice.drop],
@@ -477,3 +581,18 @@ action_toolkits: dict[str, Toolkit] = {
 
 for action, tools in action_toolkits.items():
     action_toolkits[action] = Toolkit(tools=tools, dependencies=dependencies)
+
+
+class ActionToolkitRegistry:
+    """Singleton registry exporting initialized action toolkits."""
+    _instance: dict[str, Toolkit] | None = None
+
+    @classmethod
+    def get(cls) -> dict[str, Toolkit]:
+        if cls._instance is None:
+            cls._instance = action_toolkits
+        return cls._instance
+
+
+# Export default singleton instance for external callers
+DEFAULT_ACTION_TOOLKITS = ActionToolkitRegistry.get()
