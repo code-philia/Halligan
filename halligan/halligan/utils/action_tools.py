@@ -65,6 +65,13 @@ def _to_int(value, default=0) -> int:
         return int(default)
 
 
+def _clamp_coord(x: int) -> int:
+    try:
+        return max(0, int(x))
+    except Exception:
+        return 0
+
+
 def _normalize_region(region: list[float] | None) -> dict | None:
     """Normalize a region list [x,y,w,h] into a Playwright clip dict.
 
@@ -325,8 +332,8 @@ def click(target: Union[Frame, Element], page: Page | None = None) -> None:
     if page is None:
         raise RuntimeError("No Playwright Page available to click. Call set_page(page) or pass page param.")
 
-    x, y = target.center
-    page.mouse.click(int(x), int(y))
+        x, y = target.center
+        page.mouse.click(_clamp_coord(x), _clamp_coord(y))
 
 
 def click_and_hold(target: Union[Frame, Element], observe: Frame, page: Page | None = None):
@@ -345,7 +352,7 @@ def click_and_hold(target: Union[Frame, Element], observe: Frame, page: Page | N
 
     x, y = target.center
     region = observe.region
-    page.mouse.down(x, y)
+    page.mouse.down(_clamp_coord(x), _clamp_coord(y))
     start_time = time.time()
     timeout = 10
 
@@ -381,7 +388,7 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame, pa
     prev_x, prev_y = prev_arrow.center
 
     while True:
-        page.mouse.click(int(next_x), int(next_y))
+        page.mouse.click(_clamp_coord(next_x), _clamp_coord(next_y))
         image = screenshot(region, page=page)
         diff_with_first = ImageChops.difference(image, choices[0].image)
         diff_with_prev = ImageChops.difference(image, choices[-1].image)
@@ -393,7 +400,7 @@ def get_all_choices(prev_arrow: Element, next_arrow: Element, observe: Frame, pa
         # Same as prev means it has reached the end but can't cycle back, manually do so.
         if same_as(diff_with_prev):
             for _ in range(len(choices) - 1):
-                page.mouse.click(int(prev_x), int(prev_y))
+                page.mouse.click(_clamp_coord(prev_x), _clamp_coord(prev_y))
             break
 
         index += 1
