@@ -22,7 +22,39 @@ from halligan.utils.layout import Frame, Element, Point
 
 
 load_dotenv()
-agent = GPTAgent(api_key=os.getenv("OPENAI_API_KEY"))
+_AGENT_API_KEY = os.getenv("OPENAI_API_KEY")
+
+
+# Replace raw global `agent` with a proxy singleton so callers that use
+# `agent(prompt, images, captions)` or call `agent.reset()` continue to
+# work without changing call sites. Create the GPTAgent instance unconditionally
+# (matching original behavior where an agent object existed regardless of API key).
+class _AgentState:
+    def __init__(self) -> None:
+        # Initialize GPTAgent even if API key is None to preserve prior behavior
+        try:
+            self._agent = GPTAgent(api_key=_AGENT_API_KEY)
+        except Exception:
+            # If GPTAgent construction fails, keep None and let callers handle
+            self._agent = None
+
+
+class _AgentProxy:
+    def __call__(self, *args, **kwargs):
+        agent = _AGENT_STATE._agent
+        if agent is None:
+            raise RuntimeError("GPTAgent not initialized. Ensure OPENAI_API_KEY is set or initialize agent before use.")
+        return agent(*args, **kwargs)
+
+    def __getattr__(self, name: str):
+        agent = _AGENT_STATE._agent
+        if agent is None:
+            raise RuntimeError("GPTAgent not initialized. Ensure OPENAI_API_KEY is set or initialize agent before use.")
+        return getattr(agent, name)
+
+
+_AGENT_STATE = _AgentState()
+agent = _AgentProxy()
 
 
 def mark(images: list[PIL.Image.Image], object: str) -> list[PIL.Image.Image]:
@@ -60,7 +92,7 @@ def focus(image: PIL.Image.Image, description: str) -> list[PIL.Image.Image]:
     return zoomed_regions
 
 
-def ask(images: list[PIL.Image.Image], question: str, answer_type: str) -> list[Any]:
+def ask(images: list[PIL.Image.Image], question: str, answer_type: str, agent_instance=None) -> list[Any]:
     """
     Ask a question about the visual state of a batch of images.
     `answer_type` can be `bool`, `int`, `str`.
@@ -102,9 +134,19 @@ def ask(images: list[PIL.Image.Image], question: str, answer_type: str) -> list[
         f"You should follow the format `{answers_format}` to answer the question.\n"
         f"{hint}"
     )
+    if not isinstance(images, list) or not all(hasattr(img, "size") for img in images):
+        raise ValueError("`images` must be a list of PIL.Image.Image instances")
+
     image_captions = [f"Image {i}" for i in range(len(images))]
-    response, _ = agent(prompt, images, image_captions)
-    agent.reset()
+    # prefer explicit agent instance, fallback to module agent if present
+    _agent = agent_instance or _AGENT_STATE._agent
+    if _agent is None:
+        raise RuntimeError("GPTAgent not initialized. Provide agent_instance or set OPENAI_API_KEY.")
+
+    response, _ = _agent(prompt, images, image_captions)
+    # reset if available
+    if hasattr(_agent, "reset"):
+        _agent.reset()
     match = re.search(answer_pattern, response)
     if match:
         matches = eval(match.group(2))
@@ -116,7 +158,7 @@ def ask(images: list[PIL.Image.Image], question: str, answer_type: str) -> list[
     return matches
 
 
-def rank(images: list[PIL.Image.Image], task_objective: str) -> list[str]:
+def rank(images: list[PIL.Image.Image], task_objective: str, agent_instance=None) -> list[str]:
     """
     Ranks each image in the `images` list based on the specified criteria in `task_objective`.
     Returns image_ids (list[int]), a list of image IDs ordered by descending rank.
@@ -142,9 +184,12 @@ def rank(images: list[PIL.Image.Image], task_objective: str) -> list[str]:
         return result
     
     def get_top_rank(prompt, batch_image, batch_captions):
+        _agent = agent_instance or _AGENT_STATE._agent
+        if _agent is None:
+            raise RuntimeError("GPTAgent not initialized. Provide agent_instance or set OPENAI_API_KEY.")
+
         # Get ranking
-        response, _ = agent(prompt, batch_image, batch_captions)
-        #agent.reset()
+        response, _ = _agent(prompt, batch_image, batch_captions)
         match = re.search(r'rank\((ids=)?(\[[\d, ]+\])\)', response)
 
         print(response)
@@ -156,10 +201,14 @@ def rank(images: list[PIL.Image.Image], task_objective: str) -> list[str]:
         best_node = Node(best_id)
         best_node.children = [batch[i] for i in ranking]
 
-        agent.reset()
+        if hasattr(_agent, "reset"):
+            _agent.reset()
         return best_node
 
     # To prevent agent from being overwhelmed, batch the input images
+
+    if not isinstance(images, list) or not images:
+        raise ValueError("`images` must be a non-empty list of PIL.Image.Image instances")
 
     print("all images", len(images))
 
@@ -217,7 +266,7 @@ def rank(images: list[PIL.Image.Image], task_objective: str) -> list[str]:
     return preorder(root)
 
 
-def compare(images: list[PIL.Image.Image], task_objective: str, reference: PIL.Image.Image = None) -> list[bool]:
+def compare(images: list[PIL.Image.Image], task_objective: str, reference: PIL.Image.Image = None, agent_instance=None) -> list[bool]:
     """
     Compare each image with the `reference` image and check if it satisfies `task_objective`.
     Returns comparison (list[bool]), a list of True/False for each image in `images`.
@@ -264,11 +313,21 @@ def compare(images: list[PIL.Image.Image], task_objective: str, reference: PIL.I
         f"{hint}"
     )
 
+    if reference is not None and not hasattr(reference, "size"):
+        raise ValueError("`reference` must be a PIL.Image.Image or None")
+
+    if not isinstance(images, list):
+        raise ValueError("`images` must be a list of PIL.Image.Image instances")
+
     images = [reference] + images
     image_captions = ["Reference"] + [f"Item {i}" for i in range(len(images))]
-    response, _ = agent(prompt, images, image_captions)
+    _agent = agent_instance or _AGENT_STATE._agent
+    if _agent is None:
+        raise RuntimeError("GPTAgent not initialized. Provide agent_instance or set OPENAI_API_KEY.")
 
-    agent.reset()
+    response, _ = _agent(prompt, images, image_captions)
+    if hasattr(_agent, "reset"):
+        _agent.reset()
     match = re.search(answer_pattern, response)
     matches = eval(match.group(2)) if match else [False] * (len(images) - 1)
     return matches
@@ -349,7 +408,18 @@ def match(e1: Element, e2: Element) -> bool:
     return _moment_match() and _color_match()
 
 
-dependencies = {**globals(), "__builtins__": __builtins__, "List": List}
+dependencies = {
+    "ask": ask,
+    "rank": rank,
+    "compare": compare,
+    "match": match,
+    "Frame": Frame,
+    "Element": Element,
+    "Point": Point,
+    "PIL": PIL,
+    "__builtins__": __builtins__,
+    "List": List,
+}
 
 vision_toolkits: dict[str, Toolkit] = {
     "DRAGGABLE": [ask, rank, Frame.show_keypoints, Frame.get_keypoint, Point.show_neighbours, Point.get_neighbour],
@@ -364,3 +434,18 @@ vision_toolkits: dict[str, Toolkit] = {
 
 for action, tools in vision_toolkits.items():
     vision_toolkits[action] = Toolkit(tools=tools, dependencies=dependencies)
+
+
+class VisionToolkitRegistry:
+    """Singleton registry exporting the initialized vision toolkits."""
+    _instance: dict[str, Toolkit] | None = None
+
+    @classmethod
+    def get(cls) -> dict[str, Toolkit]:
+        if cls._instance is None:
+            cls._instance = vision_toolkits
+        return cls._instance
+
+
+# Export default singleton instance for external callers
+DEFAULT_VISION_TOOLKITS = VisionToolkitRegistry.get()

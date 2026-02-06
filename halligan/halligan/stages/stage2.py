@@ -1,6 +1,8 @@
 import re
 import ast
-from typing import List
+import time
+import logging
+from typing import List, Callable
 from textwrap import indent
 
 import halligan.prompts as Prompts
@@ -9,6 +11,47 @@ from halligan.utils.toolkit import Toolkit
 from halligan.utils.constants import Stage
 from halligan.utils.layout import Frame, Element, get_observation
 from halligan.utils.logger import Trace
+
+logger = logging.getLogger(__name__)
+
+
+# Stage-specific exceptions (kept local for stage files)
+class StageError(Exception):
+    pass
+
+class NetworkError(StageError):
+    pass
+
+class ToolInvokeError(StageError):
+    pass
+
+class ScriptSyntaxError(StageError):
+    pass
+
+def _is_network_error(exc: Exception) -> bool:
+    return isinstance(exc, (ConnectionError, TimeoutError)) or "network" in str(exc).lower()
+
+
+def _run_with_retry(func: Callable, retries: int = 3, backoff: float = 0.5):
+    last_exc = None
+    for attempt in range(1, retries + 1):
+        try:
+            return func()
+        except Exception as e:
+            last_exc = e
+            if _is_network_error(e):
+                logger.warning(f"Network error attempt {attempt}/{retries}: {e}")
+            else:
+                logger.warning(f"Error attempt {attempt}/{retries}: {e}")
+            if attempt == retries:
+                break
+            time.sleep(backoff * attempt)
+
+    if last_exc and _is_network_error(last_exc):
+        raise NetworkError(str(last_exc)) from last_exc
+    if isinstance(last_exc, SyntaxError):
+        raise ScriptSyntaxError(str(last_exc)) from last_exc
+    raise ToolInvokeError(str(last_exc)) from last_exc
 
 
 stage = Stage.STRUCTURE_ABSTRACTION
@@ -66,13 +109,39 @@ def structure_abstraction(agent: Agent, frames: list[Frame], objective: str) -> 
     )
     print(prompt)
 
-    # Request script from agent
-    response, _ = agent(prompt, images, image_captions)
-    script = get_script(response)
+    # Request script from agent with retries
+    def request_script():
+        resp = agent(prompt, images, image_captions)
+        if isinstance(resp, (tuple, list)):
+            resp_text = resp[0]
+        else:
+            resp_text = resp
+        code = get_script(resp_text)
+        if not code:
+            raise ToolInvokeError("Agent returned no python code block for structure_abstraction")
+        return code
+
+    script = _run_with_retry(request_script, retries=3, backoff=0.6)
     print(script)
 
-    # Execute response script
-    env = {}
-    exec(script, toolkit.dependencies, env)
-    env["process"](frames)
+    # Execute response script safely
+    def exec_script():
+        try:
+            ast.parse(script)
+        except SyntaxError as e:
+            raise ScriptSyntaxError(str(e)) from e
+
+        env = {}
+        try:
+            exec(script, toolkit.dependencies, env)
+        except Exception as e:
+            raise ToolInvokeError(str(e)) from e
+
+        if "process" not in env or not callable(env["process"]):
+            raise ToolInvokeError("Agent script did not define a callable 'process(frames)'")
+
+        env["process"](frames)
+        return True
+
+    _run_with_retry(exec_script, retries=2, backoff=0.4)
     agent.reset()
