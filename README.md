@@ -7,6 +7,12 @@
 
 Halligan is a vision-language model (VLM) agent designed to solve visual CAPTCHA challenges. It is published in *"Are CAPTCHAs Still Bot-hard? Generalized Visual CAPTCHA Solving with Agentic Vision Language Model"* (USENIX Security'25)
 
+One year later:
+> [!NOTE]
+> Astra has successfully beat all 48 levels of the “I’m Not a Robot” game: https://t.co/DoDyx2V85v
+> 
+> Sharif Shameem ([@sharifshameem](https://x.com/sharifshameem)) on September 7, 2026
+
 > [!IMPORTANT] 
 > **Disclaimer:**
 > Halligan is provided strictly for *research purposes* only. By using this tool, you agree to:
